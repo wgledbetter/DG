@@ -66,7 +66,7 @@ class EikSol {
                 sols.push_back(1/sqrt(rad) + uy);
             }
         }
-        return std::min_element(sols.begin(), sols.end());
+        return *std::min_element(sols.begin(), sols.end());
     }
 
 };
