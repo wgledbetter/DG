@@ -6,7 +6,7 @@ class EikSol {
 
     struct MeshData {
         static vector< vector<int> > neigh;
-        static vector< vector<double> > val;
+        static vector<double> val;
         static vector< Eigen::Matrix<double, dim, dim> > spd;
     }
 
@@ -80,15 +80,17 @@ class EikSol {
 
     }
 
-    inline void set_spd_func(ScalarFunc* funx){
-
-        for(int v=0; v<meshVerts.size(); v++){  // Make parallel
-            
-        }
-
+    inline void set_spd_func(Func* funx){
+        // Scalar or tensor
     }
 
     inline void calc_mesh(){
+
+        for(int v=0; v<meshVerts.size(); v++){  // Make parallel
+            Eigen::Matrix<double, dim, 1> vert = meshVerts[v];
+            // If scalar, becomes dimXdim, if tensor, stays same
+            MeshData::spd[v] = Eigen::Matrix<int, dim, dim>::Identity() * spdFunc(vert);
+        }
 
     }
 

@@ -1,1 +1,9 @@
-In order to avoid memory read conflicts, I think each vertex in the active list should store the values of its neighbors. This will result in duplicate data for points which are bordered by two active list points, but according to Jeong, this is a beneficial tradeoff, especially for cuda implementations. I do wonder about overhead in creating that data structure on each while iteration.
+In order to avoid memory read conflicts, I think each vertex in the active list should store the values of its neighbors.
+This will result in duplicate data for points which are bordered by two active list points, but according to Jeong, this is a beneficial tradeoff, especially for cuda implementations.
+I do wonder about overhead in creating that data structure on each while iteration.
+
+
+2 Sep:
+Does it make sense to have crtp in this?
+
+Need Mesh::vert_closest_to(Eigen::Vector) and Mesh::verts_inside(vector<double> highs, vector<double> lows)
