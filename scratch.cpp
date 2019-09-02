@@ -13,6 +13,7 @@ class EikSol {
     vector<int> actList;
     vector<int> removeThese;
     vector<int> addThese;
+    vector< vector<double> > gridBounds;
 
     void mainAlg(){
         while(actList.size()){
@@ -56,17 +57,39 @@ class EikSol {
         for(int n=0; n<MeshData::neigh[v].size(); n++){  // Could do this in parallel, but probably not necessary?
             int nb = MeshData::neigh[v][n];
             if(MeshData::val[nb] == std::numeric_limits<double>::infinity()){
-                wow fake;
+                wow fake;  // Skip
             }else{
                 Eigen::Matrix<double, dim, 1> y = meshVerts[nb];
                 double uy = MeshData::val[nb];
 
-                Eigen::Matrix<double, dim, 1> del = (x-y).cwiseInverse();
-                double rad = del.transpose()*M*del;
-                sols.push_back(1/sqrt(rad) + uy);
+                Eigen::Matrix<double, dim, 1> del = (x-y).cwiseInverse();  // If I'm being super picky, this could be pre-computed.
+                double rad = del.transpose()*M*del;  // So could this. This could be stored alongside each neighbor of a point?
+                sols.push_back(1/sqrt(rad) + uy);  // In fact, the whole inverse square root term could be precomputed for each vert-neighbor pair.
             }
         }
         return *std::min_element(sols.begin(), sols.end());
+    }
+
+    // This will go in a different object
+    inline void set_bounds(int dim, double lo, double hi){
+
+    }
+
+    // This will go in a different object
+    inline void set_disc(int dim, int nPoints){
+
+    }
+
+    inline void set_spd_func(ScalarFunc* funx){
+
+        for(int v=0; v<meshVerts.size(); v++){  // Make parallel
+            
+        }
+
+    }
+
+    inline void calc_mesh(){
+
     }
 
 };
