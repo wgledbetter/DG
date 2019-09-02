@@ -61,7 +61,8 @@ namespace WGL_DG {
         //======================================================================
             /// Primary Methods
             inline void init(){
-
+                // Calc speeds for all mesh points
+                // Calc (1/sqrt((x-y).trps()*M*(x-y))) for all connections?
             }
 
         //______________________________________________________________________
@@ -77,6 +78,9 @@ namespace WGL_DG {
     ////////////////////////////////////////////////////////////////////////////
         protected:
             /// Intermediate Methods
+            inline double solvePDE(int v){
+
+            }
 
 
     ////////////////////////////////////////////////////////////////////////////
