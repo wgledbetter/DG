@@ -105,6 +105,10 @@ namespace WGL_DG {
                 int factor = discretization.prod();
                 idx = 0;
                 for(int i=dim-1; i>-1; i--){
+                    if(vec[i] >= discretization[i]){
+                        idx = std::numeric_limits<int>::infinity();
+                        return;
+                    }
                     factor /= discretization[i];
                     idx += factor*vec[i];
                 }
@@ -114,6 +118,10 @@ namespace WGL_DG {
                 int factor = pow(disc, dim);
                 idx = 0;
                 for(int i=dim-1; i>-1; i--){
+                    if(vec[i] >= disc){
+                        idx = std::numeric_limits<int>::infinity();
+                        return;
+                    }
                     factor /= disc;
                     idx += factor*vec[i];
                 }
@@ -151,7 +159,7 @@ namespace WGL_DG {
         //______________________________________________________________________
             inline std::vector<int> calcNeighbors(Vector<int> idxVec) const {
 
-                std::vector<int> out;
+                std::vector<int> out = {};
 
                 const Vector<int> lowVec = -Vector<int>::Ones();
                 const Vector<int> dxVec = Vector<int>::Ones();
@@ -167,7 +175,8 @@ namespace WGL_DG {
                     nhbVec = idxVec + delta;
                     // If in bounds AND not central
                     bool cond1 = (nhbVec == nhbVec.cwiseAbs());  // No element is subzero
-                    bool cond2 = ( (nDisc-nhbVec) == (nDisc-nhbVec).cwiseAbs() );  // No element is above nDisc
+                    Vector<int> vec2 = (nDisc-nhbVec).array() - 1;
+                    bool cond2 = ( vec2 == vec2.cwiseAbs() );  // No element is above nDisc
                     bool cond3 = (delta != Vector<int>::Zero());  // This is not the central point
                     if(cond1 && cond2 && cond3){
                         index_n2one(nhbVec, nb, nDisc);

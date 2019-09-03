@@ -4,10 +4,10 @@
 #include <limits>
 #include <algorithm>
 #include <Eigen/Core>
+#include <Eigen/Dense>
 
 #include "ctpl.h"
 #include "Mesh.h"
-#include "TensorFunction.h"
 
 using namespace std;
 
@@ -29,7 +29,7 @@ namespace WGL_DG {
         //======================================================================
             /// Constructors
             EikonalSolution(){
-                
+                fim.convTol = 1e-6;
             }
 
 
@@ -66,7 +66,7 @@ namespace WGL_DG {
                     meshData.is_seed[seedVert[i]] = true;
                 }
                 for(int i=0; i<seedVert.size(); i++){
-                    for(int j=0; j<Mesh::neighbors[seedVert[i]]; j++){
+                    for(int j=0; j < Mesh::neighbors[seedVert[i]].size(); j++){
                         int nb = Mesh::neighbors[seedVert[i]][j];
                         if(!meshData.is_seed[nb] && !meshData.is_active[nb]){
                             meshData.is_active[nb] = true;
@@ -85,9 +85,10 @@ namespace WGL_DG {
                     for(int j=0; j<nNhb; j++){
                         int nb = Mesh::neighbors[i][j];
                         Vector<double> y = Mesh::verts[nb];
-                        Vector<double> invDist = (x-y).cwiseInverse();
-                        double radical = invDist.transpose()*M*invDist;
-                        meshData.costToGo[i][j] = 1/sqrt(radical);
+                        Vector<double> delta = x-y;
+                        Vector<double> temp = M.ldlt().solve(delta);
+                        double radical = delta.dot(temp);
+                        meshData.costToGo[i][j] = sqrt(radical);
                     }
                 }
 
@@ -115,7 +116,8 @@ namespace WGL_DG {
             /// Intermediate Methods
             inline double solvePDE(int v) const {
                 vector<double> sols;
-                for(int i=0; i<Mesh::neighbors[v].size(); i++){
+                int nNhb = Mesh::neighbors[v].size();
+                for(int i=0; i<nNhb; i++){
                     int nb = Mesh::neighbors[v][i];
                     if(meshData.val[nb] == numeric_limits<double>::infinity()){
                         // Skip
@@ -136,7 +138,7 @@ namespace WGL_DG {
                 if(abs(p-q) < fim.convTol){
                     for(int i=0; i<Mesh::neighbors[v].size(); i++){
                         int nb = Mesh::neighbors[v][i];
-                        if(!fim.is_active[nb]){
+                        if(!meshData.is_active[nb]){
                             double ip = meshData.val[nb];
                             double iq = solvePDE(nb);
                             if(ip > iq){

@@ -4,4 +4,4 @@
 # NOCDDL
 #
 # Debug configuration
-# Release configuration
+# Perf_Release configuration

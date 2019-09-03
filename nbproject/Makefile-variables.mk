@@ -14,14 +14,14 @@ CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux/dg
 CND_PACKAGE_DIR_Debug=dist/Debug/GNU-Linux/package
 CND_PACKAGE_NAME_Debug=dg.tar
 CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux/package/dg.tar
-# Release configuration
-CND_PLATFORM_Release=GNU-Linux
-CND_ARTIFACT_DIR_Release=dist/Release/GNU-Linux
-CND_ARTIFACT_NAME_Release=dg
-CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux/dg
-CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux/package
-CND_PACKAGE_NAME_Release=dg.tar
-CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux/package/dg.tar
+# Perf_Release configuration
+CND_PLATFORM_Perf_Release=GNU-Linux
+CND_ARTIFACT_DIR_Perf_Release=dist/Perf_Release/GNU-Linux
+CND_ARTIFACT_NAME_Perf_Release=dg
+CND_ARTIFACT_PATH_Perf_Release=dist/Perf_Release/GNU-Linux/dg
+CND_PACKAGE_DIR_Perf_Release=dist/Perf_Release/GNU-Linux/package
+CND_PACKAGE_NAME_Perf_Release=dg.tar
+CND_PACKAGE_PATH_Perf_Release=dist/Perf_Release/GNU-Linux/package/dg.tar
 #
 # include compiler specific variables
 #

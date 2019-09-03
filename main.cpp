@@ -1,27 +1,44 @@
 #include <cstdlib>
+#include <vector>
+#include <iostream>
 
 #include "src/EikonalSolution.h"
 #include "src/Mesh.h"
+#include "src/TensorFunction.h"
 
 using namespace std;
 using namespace WGL_DG;
 
 int main() {
     
-    Mesh<4, MeshType::Regular> m;
-    EikonalSolution< 4, TensorFunction<4>, Mesh<4, MeshType::Regular> > eikSol;
+    const int dim = 5;
     
-    m.set_bounds(0, -1, 1);
-    m.set_bounds(1, -1, 1);
-    m.set_bounds(2, -1, 1);
-    m.set_bounds(3, -1, 1);
+    IdentityTensorFunction<dim> itf;
     
-    m.set_nDisc(0, 10);
-    m.set_nDisc(1, 10);
-    m.set_nDisc(2, 10);
-    m.set_nDisc(3, 10);
+    EikonalSolution< dim, IdentityTensorFunction<dim>, Mesh<dim, MeshType::Regular> > eikSol;
     
-    m.gen_mesh();
+    for(int i=0; i<dim; i++){
+        eikSol.set_bounds(i, -1, 1);
+        eikSol.set_nDisc(i, 10);
+    }
+    
+    eikSol.gen_mesh();
+    
+    eikSol.set_spd_func(&itf);
+    
+    std::vector<int> seedVert;
+    std::vector<double> seedVal;
+    seedVert.push_back(0);
+    seedVal.push_back(0.0);
+    eikSol.set_seed(seedVert, seedVal);
+    
+    eikSol.init();
+    
+    cout << "Initialized..." << endl;
+    
+    bool breakp = true;
+    
+    eikSol.compute();
 
     return 0;
 }
