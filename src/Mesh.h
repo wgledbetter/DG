@@ -23,6 +23,8 @@ namespace WGL_DG {
 
         public:
             /// Typedefs
+            template<class Scalar>
+            using Vector = Eigen::Matrix<Scalar, dim, 1>;
 
 
         //======================================================================
@@ -72,65 +74,113 @@ namespace WGL_DG {
                 }
 
                 // Calc total verts
-                nVert = std::accumulate(nDisc.begin(), nDisc.end(), 1, std::multiplies<int>());
+                nVert = nDisc.prod();
                 verts.resize(nVert);
                 neighbors.resize(nVert);
 
                 // Calculate vertex locations
-                Eigen::Matrix<int, dim, 1> idxVec = Eigen::Matrix<int, dim, 1>::Zeros();
+                Vector<int> idxVec = Vector<int>::Zeros();
                 for(int i=0; i<nVert; i++){
                     verts[i] = calcVert(idxVec);
-                    incrementNdIndex(idxVec);
+                    neighbors[i] = calcNeighbors(idxVec);
+                    incrementNdIndex(idxVec, nDisc);
                 }
+                
             }
 
 
     ////////////////////////////////////////////////////////////////////////////
         protected:
             /// Intermediate Methods
-            inline void index_one2n(int idx, Eigen::Matrix<int, dim, 1> &vec) const {
-                int denom = std::accumulate(nDisc.begin(), nDisc.end(), 1, std::multiplies<int>());
+            inline void index_one2n(int idx, Vector<int> &vec, const Vector<int> &discretization) const {
+                int denom = discretization.prod();
                 for(int i=dim-1; i>-1; i--){
-                    denom /= nDisc[i];
+                    denom /= discretization[i];
                     vec[i] = idx % denom;
-                    idx -= vec[i]*nDisc[i];
+                    idx -= vec[i]*discretization[i];
                 }
             }
 
-            inline void index_n2one(Eigen::Matrix<int, dim, 1> vec, int &idx) const {
-                int factor = std::accumulate(nDisc.begin(), nDisc.end(), 1, std::multiplies<int>());
+            inline void index_n2one(Vector<int> vec, int &idx, const Vector<int> &discretization) const {
+                int factor = discretization.prod();
                 idx = 0;
                 for(int i=dim-1; i>-1; i--){
-                    factor /= nDisc[i];
+                    factor /= discretization[i];
+                    idx += factor*vec[i];
+                }
+            }
+            
+            inline void index_n2one(Vector<int> vec, int &idx, const int disc){
+                int factor = pow(disc, dim);
+                idx = 0;
+                for(int i=dim-1; i>-1; i--){
+                    factor /= disc;
                     idx += factor*vec[i];
                 }
             }
 
-            inline void incrementNdIndex(Eigen::Matrix<int, dim, 1> &vec) const {
+            inline void incrementNdIndex(Vector<int> &vec, const Vector<int> &discretization) const {
                 for(int i=0; i<dim; i++){
-                    if(vec[i]+1 < nDisc[i]){
+                    if(vec[i]+1 < discretization[i]){
                         vec[i]++;
+                        return;
                     }else{
                         vec[i] = 0;
                     }
                 }
             }
+            
+            inline void incrementNdIndex(Vector<int> &vec, const int disc){
+                for(int i=0; i<dim; i++){
+                    if(vec[i]+1 < disc){
+                        vec[i]++;
+                        return;
+                    }else{
+                        vec[i] = 0;
+                    }
+                }
+            }
+            
 
         //______________________________________________________________________
-            inline Eigen::Matrix<double, dim, 1> calcVert(Eigen::Matrix<int, dim, 1> idxVec) const {
+            inline Vector<double> calcVert(Vector<int> idxVec) const {
                 return loBounds + dx.cwiseProduct(idxVec);
             }
 
         //______________________________________________________________________
-            inline std::vector<int> calcNeighbors(Eigen::Matrix<int, dim, 1> idxVec) const {
-                // All permutations of dim instances of {-1, 0, 1} except all zeros
-                int nNhb = pow(3, dim) - 1;  // Max possible neighbors
+            inline std::vector<int> calcNeighbors(const Vector<int> idxVec) const {
 
+                std::vector<int> out;
+
+                const Vector<int> lowVec = -Vector<int>::Ones();
+                const Vector<int> dxVec = Vector<int>::Ones();
+
+                Vector<int> nhbIdxVec = Vector<int>::Zeros();
+                Vector<int> delta;
+                Vector<int> nhbVec;
+                int nb;
+
+                int nNhb = pow(3, dim);
+                for(int i=0; i<nNhb; i++){
+                    delta = lowVec + dxVec.cwiseProduct(nhbIdxVec);
+                    nhbVec = idxVec + delta;
+                    // If in bounds AND not central
+                    bool cond1 = (nhbVec == nhbVec.cwiseAbs());  // No element is subzero
+                    bool cond2 = ( (nDisc-nhbVec) == (nDisc-nhbVec).cwiseAbs() );  // No element is above nDisc
+                    bool cond3 = (delta != Vector<int>::Zero());  // This is not the central point
+                    if(cond1 && cond2 && cond3){
+                        index_n2one(nhbVec, nb, nDisc);
+                        out.push_back(nb);
+                    }
+                    incrementNdIndex(nhbIdxVec, 3);
+                }
+                
+                return out;
             }
 
         //======================================================================
             /// Properties
-            std::vector< Eigen::Matrix<double, dim, 1> > verts;
+            std::vector< Vector<double> > verts;
             std::vector< std::vector<int> > neighbors;
             int nVert;
 
@@ -138,10 +188,10 @@ namespace WGL_DG {
     ////////////////////////////////////////////////////////////////////////////
         private:
             /// Properties
-            std::vector<int> nDisc;
-            Eigen::Matrix<double, dim, 1> dx;
-            Eigen::Matrix<double, dim, 1> loBounds;
-            Eigen::Matrix<double, dim, 1> hiBounds;
+            Vector<int> nDisc;
+            Vector<double> dx;
+            Vector<double> loBounds;
+            Vector<double> hiBounds;
 
     };
 

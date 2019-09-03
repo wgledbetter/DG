@@ -19,6 +19,11 @@ namespace WGL_DG {
         public:
             /// Typedefs
             //using MeshBase = Mesh;
+            template<class Scalar>
+            using Vector = Eigen::Matrix<Scalar, dim, 1>;
+            
+            template<class Scalar>
+            using Matrix = Eigen::Matrix<Scalar, dim, dim>;
 
 
         //======================================================================
@@ -75,12 +80,12 @@ namespace WGL_DG {
                 for(int i=0; i<Mesh::nVert; i++){
                     int nNhb = Mesh::neighbors[i].size();
                     meshData.costToGo[i].resize(nNhb);
-                    Eigen::Matrix<double, dim, 1> x = Mesh::verts[i];
-                    Eigen::Matrix<double, dim, dim> M = tFunc->compute(x);
+                    Vector<double> x = Mesh::verts[i];
+                    Matrix<double> M = tFunc->compute(x);
                     for(int j=0; j<nNhb; j++){
                         int nb = Mesh::neighbors[i][j];
-                        Eigen::Matrix<double, dim, 1> y = Mesh::verts[nb];
-                        Eigen::Matrix<double, dim, 1> invDist = (x-y).cwiseInverse();
+                        Vector<double> y = Mesh::verts[nb];
+                        Vector<double> invDist = (x-y).cwiseInverse();
                         double radical = invDist.transpose()*M*invDist;
                         meshData.costToGo[i][j] = 1/sqrt(radical);
                     }
@@ -183,7 +188,7 @@ namespace WGL_DG {
 
             struct MeshData {
                 vector<double> val;
-                vector< Eigen::Matrix<double, dim, dim> > spd;
+                vector< Matrix<double> > spd;
                 vector<bool> is_seed;
                 vector<bool> is_active;
                 vector< vector<double> > costToGo;  // costToGo[i][j] is cost to go from vertex i to its jth neighbor
