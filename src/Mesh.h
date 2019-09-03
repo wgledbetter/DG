@@ -79,7 +79,7 @@ namespace WGL_DG {
                 neighbors.resize(nVert);
 
                 // Calculate vertex locations
-                Vector<int> idxVec = Vector<int>::Zeros();
+                Vector<int> idxVec = Vector<int>::Zero();
                 for(int i=0; i<nVert; i++){
                     verts[i] = calcVert(idxVec);
                     neighbors[i] = calcNeighbors(idxVec);
@@ -92,7 +92,7 @@ namespace WGL_DG {
     ////////////////////////////////////////////////////////////////////////////
         protected:
             /// Intermediate Methods
-            inline void index_one2n(int idx, Vector<int> &vec, const Vector<int> &discretization) const {
+            inline void index_one2n(int idx, Vector<int> &vec, Vector<int> discretization) const {
                 int denom = discretization.prod();
                 for(int i=dim-1; i>-1; i--){
                     denom /= discretization[i];
@@ -101,7 +101,7 @@ namespace WGL_DG {
                 }
             }
 
-            inline void index_n2one(Vector<int> vec, int &idx, const Vector<int> &discretization) const {
+            inline void index_n2one(Vector<int> vec, int &idx, Vector<int> discretization) const {
                 int factor = discretization.prod();
                 idx = 0;
                 for(int i=dim-1; i>-1; i--){
@@ -110,7 +110,7 @@ namespace WGL_DG {
                 }
             }
             
-            inline void index_n2one(Vector<int> vec, int &idx, const int disc){
+            inline void index_n2one(Vector<int> vec, int &idx, int disc) const {
                 int factor = pow(disc, dim);
                 idx = 0;
                 for(int i=dim-1; i>-1; i--){
@@ -119,7 +119,7 @@ namespace WGL_DG {
                 }
             }
 
-            inline void incrementNdIndex(Vector<int> &vec, const Vector<int> &discretization) const {
+            inline void incrementNdIndex(Vector<int> &vec, Vector<int> discretization) const {
                 for(int i=0; i<dim; i++){
                     if(vec[i]+1 < discretization[i]){
                         vec[i]++;
@@ -130,7 +130,7 @@ namespace WGL_DG {
                 }
             }
             
-            inline void incrementNdIndex(Vector<int> &vec, const int disc){
+            inline void incrementNdIndex(Vector<int> &vec, int disc) const {
                 for(int i=0; i<dim; i++){
                     if(vec[i]+1 < disc){
                         vec[i]++;
@@ -144,18 +144,19 @@ namespace WGL_DG {
 
         //______________________________________________________________________
             inline Vector<double> calcVert(Vector<int> idxVec) const {
-                return loBounds + dx.cwiseProduct(idxVec);
+                Vector<double> ans = loBounds + dx.cwiseProduct(idxVec.template cast<double>());
+                return ans;
             }
 
         //______________________________________________________________________
-            inline std::vector<int> calcNeighbors(const Vector<int> idxVec) const {
+            inline std::vector<int> calcNeighbors(Vector<int> idxVec) const {
 
                 std::vector<int> out;
 
                 const Vector<int> lowVec = -Vector<int>::Ones();
                 const Vector<int> dxVec = Vector<int>::Ones();
 
-                Vector<int> nhbIdxVec = Vector<int>::Zeros();
+                Vector<int> nhbIdxVec = Vector<int>::Zero();
                 Vector<int> delta;
                 Vector<int> nhbVec;
                 int nb;

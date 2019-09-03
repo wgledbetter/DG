@@ -42,8 +42,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-march=native -mtune=native -std=c++17
-CXXFLAGS=-march=native -mtune=native -std=c++17
+CCFLAGS=-march=native -mtune=native -std=c++17 -fPIC
+CXXFLAGS=-march=native -mtune=native -std=c++17 -fPIC
 
 # Fortran Compiler Flags
 FFLAGS=
