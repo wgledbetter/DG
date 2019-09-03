@@ -84,12 +84,16 @@ namespace WGL_DG {
                 }
             }
 
+        //======================================================================
+            /// Properties
+            std::vector< Eigen::Matrix<double, dim, 1> > verts;
+            std::vector< std::vector<int> > neighbors;
+
 
     ////////////////////////////////////////////////////////////////////////////
         private:
             /// Properties
             std::vector<int> nDisc(dim);
-
 
     }
 

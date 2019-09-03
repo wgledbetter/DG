@@ -14,10 +14,11 @@ using namespace std;
 namespace WGL_DG {
 
     template<int dim, class TensorFunction, class Mesh>
-    struct EikonalSolution {
+    struct EikonalSolution : Mesh {
 
         public:
             /// Typedefs
+            //using MeshBase = Mesh;
 
 
         //======================================================================
@@ -26,29 +27,18 @@ namespace WGL_DG {
                 vector<double> MeshData::val;
                 vector< Eigen::Matrix<double, dim, dim> > MeshData::spd;
                 vector<bool> MeshData::is_seed;
+                vector<bool> MeshData::is_active;
+                vector< vector<double> > MeshData::costToGo;
 
                 vector<int> FIM::activeList;
                 vector<int> FIM::removeThese;
                 vector<int> FIM::addThese;
+                double FIM::convTol;
             }
 
 
         //======================================================================
             /// Setup
-            inline void set_mesh(Mesh *m){
-                this->mesh = m;
-
-                MeshData::val.resize(mesh->nVert);
-                MeshData::spd.resize(mesh->nVert);
-                MeshData::is_seed.resize(mesh->nVert);
-                MeshData::is_active.resize(mesh->nVert);
-
-                fill(MeshData::val.begin(), MeshData::val.end(), numeric_limits<double>::infinity());
-                fill(MeshData::is_seed.begin(), MeshData::is_seed.end(), false);
-                fill(MeshData::is_active.begin(), MeshData::is_active.end(), false);
-            }
-
-        //______________________________________________________________________
             inline void set_spd_func(TensorFunction *tf){
                 this->tFunc = tf;
             }
@@ -63,6 +53,15 @@ namespace WGL_DG {
         //======================================================================
             /// Primary Methods
             inline void init(){
+                // Init mesh
+                MeshData::val.resize(Mesh::nVert);
+                MeshData::spd.resize(Mesh::nVert);
+                MeshData::is_seed.resize(Mesh::nVert);
+                MeshData::is_active.resize(Mesh::nVert);
+                fill(MeshData::val.begin(), MeshData::val.end(), numeric_limits<double>::infinity());
+                fill(MeshData::is_seed.begin(), MeshData::is_seed.end(), false);
+                fill(MeshData::is_active.begin(), MeshData::is_active.end(), false);
+
                 // Init seed
                 fill(MeshData::val.begin(), MeshData::val.end(), numeric_limits<double>::infinity());
                 fill(MeshData::is_seed.begin(), MeshData::is_seed.end(), false);
@@ -71,8 +70,8 @@ namespace WGL_DG {
                     MeshData::is_seed[seedVert[i]] = true;
                 }
                 for(int i=0; i<seedVert.size(); i++){
-                    for(int j=0; j<mesh->neighbors(seedVert[i]); j++){
-                        int nb = mesh->neighbors(seedVert[i])[j];
+                    for(int j=0; j<Mesh::neighbors[seedVert[i]]; j++){
+                        int nb = Mesh::neighbors[seedVert[i]][j];
                         if(!MeshData::is_seed[nb] && !MeshData::is_active[nb]){
                             MeshData::is_active[nb] = true;
                             FIM::activeList.push_back(nb);
@@ -80,8 +79,24 @@ namespace WGL_DG {
                     }
                 }
 
-                // Calc speeds for all mesh points
-                // Calc (1/sqrt((x-y).trps()*M*(x-y))) for all connections?
+                // Calc (1/sqrt((x-y).trps()*M*(x-y))) for all connections
+                MeshData::costToGo.resize(Mesh::nVert);
+                for(int i=0; i<Mesh::nVert; i++){
+                    int nNhb = Mesh::neighbors[i].size();
+                    MeshData::costToGo[i].resize(nNhb);
+                    Eigen::Matrix<double, dim, 1> x = Mesh::verts[i];
+                    Eigen::Matrix<double, dim, dim> M = tFunc->compute(x);
+                    for(int j=0; j<nNhb; j++){
+                        int nb = Mesh::neighbors[i][j];
+                        Eigen::Matrix<double, dim, 1> y = Mesh::verts[nb];
+                        Eigen::Matrix<double, dim, 1> invDist = (x-y).cwiseInverse();
+                        double radical = invDist.transpose()*M*invDist;
+                        costToGo[i][j] = 1/sqrt(rad);
+                    }
+                }
+
+                // Set up memory structures for high speed & conflict prevention
+                setupMemory();
             }
 
         //______________________________________________________________________
@@ -114,8 +129,8 @@ namespace WGL_DG {
                     MeshData::val[v] = q;
                 }
                 if(abs(p-q) < FIM::convTol){
-                    for(int i=0; i<mesh->neighbors(v).size(); i++){
-                        int nb = mesh->neighbors(v)[i];
+                    for(int i=0; i<Mesh::neighbors[v].size(); i++){
+                        int nb = Mesh::neighbors[v][i];
                         if(!FIM::is_active[nb]){
                             double ip = MeshData::val[nb];
                             double iq = solvePDE(nb);
@@ -152,11 +167,15 @@ namespace WGL_DG {
                 FIM::addThese.clear();
             }
 
+        //______________________________________________________________________
+            inline void setupMemory(){
+
+            }
+
 
     ////////////////////////////////////////////////////////////////////////////
         private:
             /// Properties
-            Mesh* mesh;
             TensorFunction* tFunc;
 
             vector<int> seedVert;
@@ -167,6 +186,7 @@ namespace WGL_DG {
                 static vector< Eigen::Matrix<double, dim, dim> > spd;
                 static vector<bool> is_seed;
                 static vector<bool> is_active;
+                static vector< vector<double> > costToGo;  // costToGo[i][j] is cost to go from vertex i to its jth neighbor
             };
 
             struct FIM {
