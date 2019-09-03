@@ -7,6 +7,6 @@ namespace WGL_DG {
     template<int dim>
     struct TensorFunction {
 
-    }
+    };
 
 }

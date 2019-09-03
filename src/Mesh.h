@@ -8,7 +8,7 @@ namespace WGL_DG {
 
     enum MeshType {
         Regular,
-    }
+    };
 
     /// Template
     template<int dim, int meshType>
@@ -57,7 +57,7 @@ namespace WGL_DG {
                 nDisc[d] = n;
             }
             inline void set_nDisc(std::vector<int> nD){
-                for(int i=0; i<nD.size(), i++){
+                for(int i=0; i<nD.size(); i++){
                     set_nDisc(i, nD[i]);
                 }
             }
@@ -100,7 +100,7 @@ namespace WGL_DG {
             inline void index_n2one(Eigen::Matrix<int, dim, 1> vec, int &idx) const {
                 int factor = std::accumulate(nDisc.begin(), nDisc.end(), 1, std::multiplies<int>());
                 idx = 0;
-                for(int i=dim-1, i>-1; i--){
+                for(int i=dim-1; i>-1; i--){
                     factor /= nDisc[i];
                     idx += factor*vec[i];
                 }
@@ -143,6 +143,6 @@ namespace WGL_DG {
             Eigen::Matrix<double, dim, 1> loBounds;
             Eigen::Matrix<double, dim, 1> hiBounds;
 
-    }
+    };
 
 }

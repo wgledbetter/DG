@@ -82,7 +82,7 @@ namespace WGL_DG {
                         Eigen::Matrix<double, dim, 1> y = Mesh::verts[nb];
                         Eigen::Matrix<double, dim, 1> invDist = (x-y).cwiseInverse();
                         double radical = invDist.transpose()*M*invDist;
-                        costToGo[i][j] = 1/sqrt(rad);
+                        meshData.costToGo[i][j] = 1/sqrt(radical);
                     }
                 }
 
@@ -94,7 +94,7 @@ namespace WGL_DG {
             inline void compute(){
                 while(fim.activeList.size()){
                     for(int i=0; i<fim.activeList.size(); i++){
-                        activeLoop(v);
+                        activeLoop(fim.activeList[i]);
                     }
                     updateActiveList();
                 }
@@ -115,7 +115,7 @@ namespace WGL_DG {
                     if(meshData.val[nb] == numeric_limits<double>::infinity()){
                         // Skip
                     }else{
-                        sols.push_back(costToGo[v][i] + meshData.val[nb]);
+                        sols.push_back(meshData.costToGo[v][i] + meshData.val[nb]);
                     }
                 }
                 return *min_element(sols.begin(), sols.end());
@@ -195,7 +195,7 @@ namespace WGL_DG {
                 vector<int> removeThese;
                 vector<int> addThese;
                 double convTol;
-            }
+            };
             FIM fim;
 
 
