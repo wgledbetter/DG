@@ -3,6 +3,13 @@
 #include <vector>
 #include <limits>
 #include <algorithm>
+#include <iostream>
+#include <fstream>
+#include <bits/stdc++.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <ctime>
+
 #include <Eigen/Core>
 #include <Eigen/Dense>
 
@@ -108,7 +115,40 @@ namespace WGL_DG {
 
 
         //======================================================================
-            /// Properties
+            /// Output
+            inline void textFileOutput(){
+                std::time_t t = time(0);
+                struct tm * now = localtime( & t );
+                char currentTime_buffer [80];
+                std::strftime (currentTime_buffer, 80, "%F_%T", now);
+                
+                Eigen::IOFormat Hector(Eigen::FullPrecision, 0, "", ", ", "", "", "", "");
+                
+                std::ostringstream foldName;
+                foldName << "out/" << currentTime_buffer;
+                if( mkdir(foldName.str().c_str(), 0777) != -1 ){
+                    {  // Save Value and Vertex
+                        std::ostringstream valFname;
+                        valFname << foldName.str().c_str() << "/Value.txt";
+                        std::ofstream save_val;
+                        save_val.open(valFname.str());
+                        
+                        std::ostringstream vertFname;
+                        vertFname << foldName.str().c_str() << "/Vertex.txt";
+                        std::ofstream save_vert;
+                        save_vert.open(vertFname.str());
+                        
+                        if( save_val.is_open() && save_vert.is_open()){
+                            for(int i=0; i<Mesh::nVert; i++){
+                                save_val << meshData.val[i] << '\n';
+                                save_vert << Mesh::verts[i].format(Hector) << '\n';
+                            }
+                        }
+                        save_val.close();
+                        save_vert.close();
+                    }
+                }
+            }
 
 
     ////////////////////////////////////////////////////////////////////////////

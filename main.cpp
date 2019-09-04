@@ -11,7 +11,7 @@ using namespace WGL_DG;
 
 int main() {
     
-    const int dim = 5;
+    const int dim = 2;
     
     IdentityTensorFunction<dim> itf;
     
@@ -19,7 +19,7 @@ int main() {
     
     for(int i=0; i<dim; i++){
         eikSol.set_bounds(i, -1, 1);
-        eikSol.set_nDisc(i, 10);
+        eikSol.set_nDisc(i, 250);
     }
     
     eikSol.gen_mesh();
@@ -39,6 +39,7 @@ int main() {
     bool breakp = true;
     
     eikSol.compute();
+    eikSol.textFileOutput();
 
     return 0;
 }
