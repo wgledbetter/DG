@@ -13,9 +13,9 @@ int main() {
     
     const int dim = 2;
     
-    IdentityTensorFunction<dim> itf;
+    FastEdgesTensorFunction<dim> itf;
     
-    EikonalSolution< dim, IdentityTensorFunction<dim>, Mesh<dim, MeshType::Regular> > eikSol;
+    EikonalSolution< dim, FastEdgesTensorFunction<dim>, Mesh<dim, MeshType::Regular> > eikSol;
     
     for(int i=0; i<dim; i++){
         eikSol.set_bounds(i, -1, 1);
@@ -28,8 +28,13 @@ int main() {
     
     std::vector<int> seedVert;
     std::vector<double> seedVal;
+    
     seedVert.push_back(0);
     seedVal.push_back(0.0);
+
+    seedVert.push_back(62400);
+    seedVal.push_back(0.0);
+    
     eikSol.set_seed(seedVert, seedVal);
     
     eikSol.init();

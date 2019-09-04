@@ -7,3 +7,9 @@ I do wonder about overhead in creating that data structure on each while iterati
 Does it make sense to have crtp in this?
 
 Need Mesh::vert_closest_to(Eigen::Vector) and Mesh::verts_inside(vector<double> highs, vector<double> lows)
+
+
+4 Sep:
+Need to have different mesh types inherit from base mesh and be written in separate files.
+Need to make sure points can't be duplicated on active list or addThese or removeThese.
+Need to ensure that accessing addThese and removeThese works in parallel.
