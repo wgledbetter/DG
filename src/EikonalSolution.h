@@ -194,6 +194,8 @@ namespace WGL_DG {
         //______________________________________________________________________
             inline void updateActiveList(){
                 vector<int>::iterator findInVec;
+                sort(fim.removeThese.begin(), fim.removeThese.end());
+                fim.removeThese.erase( unique(fim.removeThese.begin(), fim.removeThese.end()), fim.removeThese.end() );
                 for(int i=0; i<fim.removeThese.size(); i++){
                     int rm = fim.removeThese[i];
                     findInVec = find(fim.activeList.begin(), fim.activeList.end(), rm);
@@ -203,6 +205,9 @@ namespace WGL_DG {
                     }
                 }
                 fim.removeThese.clear();
+                
+                sort(fim.addThese.begin(), fim.addThese.end());
+                fim.addThese.erase( unique(fim.addThese.begin(), fim.addThese.end()), fim.addThese.end() );
                 for(int i=0; i<fim.addThese.size(); i++){
                     int ad = fim.addThese[i];
                     findInVec = find(fim.activeList.begin(), fim.activeList.end(), ad);
@@ -212,6 +217,9 @@ namespace WGL_DG {
                     }
                 }
                 fim.addThese.clear();
+                
+                sort(fim.activeList.begin(), fim.activeList.end());
+                fim.activeList.erase( unique(fim.activeList.begin(), fim.activeList.end()), fim.activeList.end() );
             }
 
         //______________________________________________________________________

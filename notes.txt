@@ -13,3 +13,10 @@ Need Mesh::vert_closest_to(Eigen::Vector) and Mesh::verts_inside(vector<double> 
 Need to have different mesh types inherit from base mesh and be written in separate files.
 Need to make sure points can't be duplicated on active list or addThese or removeThese.
 Need to ensure that accessing addThese and removeThese works in parallel.
+
+5 Sep:
+To implement different solvePDE functions, use policy-based design.
+    HamiltonianPolicy::solvePDE(v)
+EikonalSolution will need to inherit from HamiltonianPolicy, and HamiltonianPolicy will CRTP back to EikonalSolution to see things about mesh neighbors and such
+
+Each thread could have an addThese and a removeThese which are then conglomerated into one vector

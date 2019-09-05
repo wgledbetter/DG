@@ -11,6 +11,16 @@ using namespace WGL_DG;
 
 int main() {
     
+    vector<int> addThese = {1,2,3,2,4,1,3,5,7,1,6};
+    sort(addThese.begin(), addThese.end());
+    addThese.erase( unique(addThese.begin(), addThese.end()), addThese.end() );
+
+    for(int i=0; i<addThese.size(); i++){
+      cout << addThese[i] << '\n';
+    }
+    
+    return -1;
+    
     const int dim = 2;
     
     FastEdgesTensorFunction<dim> itf;
