@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <ctime>
+#include <thread>
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
@@ -37,6 +38,10 @@ namespace WGL_DG {
             /// Constructors
             EikonalSolution(){
                 fim.convTol = 1e-6;
+                threads = thread::hardware_concurrency();
+
+                fim.addTheseThread.resize(threads);
+                fim.removeTheseThread.resize(threads);
             }
 
 
@@ -84,6 +89,17 @@ namespace WGL_DG {
 
                 // Calc (1/sqrt((x-y).trps()*M*(x-y))) for all connections
                 meshData.costToGo.resize(Mesh::nVert);
+                vector< Matrix<double> > M;
+                M.resize(Mesh::nVert);
+                ctpl::thread_pool initThreads(threads);
+                Vector<double> x;
+                for(int i=0; i<Mesh::nVert; i++){
+                    x = Mesh::verts[i];
+                    initThreads.push( [this, x, M, i, &tFunc](int thr){ M[i] = tFunc->compute(x); } );
+                }
+                initThreads.stop(true);
+                initThreads.restart(threads);
+                
                 for(int i=0; i<Mesh::nVert; i++){
                     int nNhb = Mesh::neighbors[i].size();
                     meshData.costToGo[i].resize(nNhb);
@@ -105,10 +121,16 @@ namespace WGL_DG {
 
         //______________________________________________________________________
             inline void compute(){
+                ctpl::thread_pool fimThreads(threads);
+                int vert;
+                
                 while(fim.activeList.size()){
+                    fimThreads.restart(threads);
                     for(int i=0; i<fim.activeList.size(); i++){
-                        activeLoop(fim.activeList[i]);
+                        vert = fim.activeList[i];
+                        fimThreads.push( [this, vert](int thr){ this->activeLoop(vert, thr); } );
                     }
+                    fimThreads.stop(true);
                     updateActiveList();
                 }
             }
@@ -169,7 +191,7 @@ namespace WGL_DG {
             }
 
         //______________________________________________________________________
-            inline void activeLoop(int v){
+            inline void activeLoop(const int v, const int thr){
                 double p = meshData.val[v];
                 double q = solvePDE(v);
                 if(p > q){
@@ -183,16 +205,30 @@ namespace WGL_DG {
                             double iq = solvePDE(nb);
                             if(ip > iq){
                                 meshData.val[nb] = iq;
-                                fim.addThese.push_back(nb);
+                                fim.addTheseThread[thr].push_back(nb);
                             }
                         }
                     }
-                    fim.removeThese.push_back(v);
+                    fim.removeTheseThread[thr].push_back(v);
                 }
             }
 
         //______________________________________________________________________
             inline void updateActiveList(){
+                // Amalgamate *TheseThreads into *These
+                fim.removeThese.clear();
+                fim.addThese.clear();
+                for(int i=0; i<threads; i++){
+                    for(int j=0; j<fim.addTheseThread[i].size(); j++){
+                        fim.addThese.push_back(fim.addTheseThread[i][j]);
+                    }
+                    for(int j=0; j<fim.removeTheseThread[i].size(); j++){
+                        fim.removeThese.push_back(fim.removeTheseThread[i][j]);
+                    }
+                    fim.addTheseThread[i].clear();
+                    fim.removeTheseThread[i].clear();
+                }
+
                 vector<int>::iterator findInVec;
                 sort(fim.removeThese.begin(), fim.removeThese.end());
                 fim.removeThese.erase( unique(fim.removeThese.begin(), fim.removeThese.end()), fim.removeThese.end() );
@@ -226,6 +262,11 @@ namespace WGL_DG {
             inline void setupMemory(){
 
             }
+            
+        //______________________________________________________________________
+            inline void costToGoThread(const int i, const int j){
+                
+            }
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -235,6 +276,8 @@ namespace WGL_DG {
 
             vector<int> seedVert;
             vector<double> seedVal;
+
+            int threads;
 
             struct MeshData {
                 vector<double> val;
@@ -248,7 +291,9 @@ namespace WGL_DG {
             struct FIM {
                 vector<int> activeList;
                 vector<int> removeThese;
+                vector< vector<int> > removeTheseThread;
                 vector<int> addThese;
+                vector< vector<int> > addTheseThread;
                 double convTol;
             };
             FIM fim;

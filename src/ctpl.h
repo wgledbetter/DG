@@ -207,6 +207,17 @@ namespace ctpl {
 			this->cv.notify_one();
 			return pck->get_future();
 		}
+        
+        // allow re-use of same object
+        void restart(){
+            this->stop(false);
+            this->init();
+        }
+        void restart(int nThreads){
+            this->stop(false);
+            this->init();
+            this->resize(nThreads);
+        };
 
 
 	private:

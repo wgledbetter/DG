@@ -45,7 +45,7 @@
       </toolsSet>
       <compileType>
         <ccTool>
-          <commandLine>-march=native -mtune=native -std=c++17 -fPIC</commandLine>
+          <commandLine>-march=native -mtune=native -std=c++17 -fPIC -pthread</commandLine>
         </ccTool>
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
@@ -68,7 +68,7 @@
       <compileType>
         <ccTool>
           <developmentMode>6</developmentMode>
-          <commandLine>-march=native -mtune=native -std=c++17 -fPIC</commandLine>
+          <commandLine>-march=native -mtune=native -std=c++17 -fPIC -pthread</commandLine>
         </ccTool>
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">

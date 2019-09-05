@@ -11,17 +11,7 @@ using namespace WGL_DG;
 
 int main() {
     
-    vector<int> addThese = {1,2,3,2,4,1,3,5,7,1,6};
-    sort(addThese.begin(), addThese.end());
-    addThese.erase( unique(addThese.begin(), addThese.end()), addThese.end() );
-
-    for(int i=0; i<addThese.size(); i++){
-      cout << addThese[i] << '\n';
-    }
-    
-    return -1;
-    
-    const int dim = 2;
+    const int dim = 3;
     
     FastEdgesTensorFunction<dim> itf;
     
@@ -42,7 +32,7 @@ int main() {
     seedVert.push_back(0);
     seedVal.push_back(0.0);
 
-    seedVert.push_back(62400);
+    seedVert.push_back(624);
     seedVal.push_back(0.0);
     
     eikSol.set_seed(seedVert, seedVal);
