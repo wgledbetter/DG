@@ -89,31 +89,16 @@ namespace WGL_DG {
 
                 // Calc (1/sqrt((x-y).trps()*M*(x-y))) for all connections
                 meshData.costToGo.resize(Mesh::nVert);
-                vector< Matrix<double> > M;
-                M.resize(Mesh::nVert);
                 ctpl::thread_pool initThreads(threads);
-                Vector<double> x;
-                for(int i=0; i<Mesh::nVert; i++){
-                    x = Mesh::verts[i];
-                    initThreads.push( [this, x, M, i, &tFunc](int thr){ M[i] = tFunc->compute(x); } );
-                }
-                initThreads.stop(true);
-                initThreads.restart(threads);
                 
                 for(int i=0; i<Mesh::nVert; i++){
                     int nNhb = Mesh::neighbors[i].size();
                     meshData.costToGo[i].resize(nNhb);
-                    Vector<double> x = Mesh::verts[i];
-                    Matrix<double> M = tFunc->compute(x);
                     for(int j=0; j<nNhb; j++){
-                        int nb = Mesh::neighbors[i][j];
-                        Vector<double> y = Mesh::verts[nb];
-                        Vector<double> delta = x-y;
-                        Vector<double> temp = M.ldlt().solve(delta);
-                        double radical = delta.dot(temp);
-                        meshData.costToGo[i][j] = sqrt(radical);
+                        initThreads.push( [this, i, j](int thr){ this->costToGoThread(i, j); } );
                     }
                 }
+                initThreads.stop(true);
 
                 // Set up memory structures for high speed & conflict prevention
                 setupMemory();
@@ -265,7 +250,14 @@ namespace WGL_DG {
             
         //______________________________________________________________________
             inline void costToGoThread(const int i, const int j){
-                
+                Vector<double> x = Mesh::verts[i];
+                Matrix<double> M = tFunc->compute(x);
+                int nb = Mesh::neighbors[i][j];
+                Vector<double> y = Mesh::verts[nb];
+                Vector<double> delta = x-y;
+                Vector<double> temp = M.ldlt().solve(delta);
+                double radical = delta.dot(temp);
+                meshData.costToGo[i][j] = sqrt(radical);
             }
 
 
