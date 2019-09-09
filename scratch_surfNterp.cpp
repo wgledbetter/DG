@@ -1,5 +1,3 @@
-// Make an outline for your 'surface interpolation with HJB constraints' idea
-
 #include <Eigen/Sparse>
 #include <Eigen/PardisoSupport>
 
@@ -73,7 +71,9 @@ struct SurfNTerp<2, VectorFunction, Mesh<2, MeshType::RecTriangular> > : Mesh<2,
             }
 
             // Calc HJB constraints
-            // MORE CODE GOES HERE
+            // Need integral payoff function
+            // Just use dt for now - will give travel time value function
+            b[i] = dt;
         }
         // Add seed constraints
         for(int i=0; i<nSeed; i++){
@@ -96,34 +96,7 @@ struct SurfNTerp<2, VectorFunction, Mesh<2, MeshType::RecTriangular> > : Mesh<2,
     }
 
     void initVert(int i) {
-        // Calc VectorFunction
-        Vector<double> vert = Mesh::verts[i];
-        Vector<double> dVert = fVunc->compute(vert);
 
-        // Backprop by dt
-        Vector<double> back = vert - dt*dVert;
-
-        // Which triangle is it in?
-        int t = Mesh::insideTriangle(back);
-        backTri[i] = t;
-
-        // Solve interpolation weights
-        Eigen::Matrix<double, 3, 3> weightMat;
-        weightMat.row(2) = Eigen::Matrix<double, 1, 3>::Ones();
-        for(int j=0; j<3; j++){
-            weightMat.block<2,1>(0, j) = Mesh::verts[Mesh::triangles[t][j]];
-        }
-        Eigen::Matrix<double, 3, 1> weightVec;
-        weightVec[0] = back[0];
-        weightVec[1] = back[1];
-        weightVec[2] = 1;
-        weights[i] = weightMat.ldlt().solve(weightVec);
-
-        // Store weights in A
-        A(i,i) = -1;
-        for(int j=0; j<3; j++){
-            A(i, Mesh::triangles[t][j]) = weights[i][j];
-        }
     }
 
     std::vector< Eigen::Matrix<double, 3, 1> > weights;

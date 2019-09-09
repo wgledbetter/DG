@@ -5,6 +5,7 @@
 #include "src/EikonalSolution.h"
 #include "src/Mesh.h"
 #include "src/TensorFunction.h"
+#include "src/SurfNTerp.h"
 
 using namespace std;
 using namespace WGL_DG;

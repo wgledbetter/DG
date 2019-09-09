@@ -20,19 +20,19 @@ using namespace std;
 
 namespace WGL_DG {
 
-    enum FunctionType {
-        TensorFunction,
-        VectorFunction,
-        ScalarFunction,
-    };
+//    enum FunctionType {
+//        TensorFunction,
+//        VectorFunction,
+//        ScalarFunction,
+//    };
 
-    template<int dim, class DynamicsFunction, int FType, class Mesh>
-    struct EikonalSolution : Mesh {
-
-    };
+//    template<int dim, class DynamicsFunction, class Mesh>
+//    struct EikonalSolution : Mesh {
+//
+//    };
 
     template<int dim, class DynamicsFunction, class Mesh>
-    struct EikonalSolution<dim, DynamicsFunction, FunctionType::TensorFunction, Mesh> : Mesh {
+    struct EikonalSolution : Mesh {
 
         public:
             /// Typedefs

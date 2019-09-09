@@ -13,8 +13,11 @@
                    displayName="Source Files"
                    projectFiles="true">
       <logicalFolder name="src" displayName="src" projectFiles="true">
+        <itemPath>src/DirectionalSolution.h</itemPath>
         <itemPath>src/EikonalSolution.h</itemPath>
+        <itemPath>src/FIM.h</itemPath>
         <itemPath>src/Mesh.h</itemPath>
+        <itemPath>src/SurfNTerp.h</itemPath>
         <itemPath>src/TensorFunction.h</itemPath>
         <itemPath>src/ctpl.h</itemPath>
       </logicalFolder>
@@ -50,9 +53,15 @@
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/DirectionalSolution.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/EikonalSolution.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="src/FIM.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/Mesh.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/SurfNTerp.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/TensorFunction.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -68,14 +77,26 @@
       <compileType>
         <ccTool>
           <developmentMode>6</developmentMode>
+          <incDir>
+            <pElem>../../Install/intel/mkl/include</pElem>
+          </incDir>
           <commandLine>-march=native -mtune=native -std=c++17 -fPIC -pthread</commandLine>
+          <preprocessorList>
+            <Elem>EIGEN_USE_MKL_ALL</Elem>
+          </preprocessorList>
         </ccTool>
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/DirectionalSolution.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/EikonalSolution.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="src/FIM.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/Mesh.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/SurfNTerp.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/TensorFunction.h" ex="false" tool="3" flavor2="0">
       </item>
