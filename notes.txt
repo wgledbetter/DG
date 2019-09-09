@@ -20,3 +20,10 @@ To implement different solvePDE functions, use policy-based design.
 EikonalSolution will need to inherit from HamiltonianPolicy, and HamiltonianPolicy will CRTP back to EikonalSolution to see things about mesh neighbors and such
 
 Each thread could have an addThese and a removeThese which are then conglomerated into one vector
+
+If I break it down into a FIM class, what would it need?
+
+
+9 Sep
+how to do constraint indexing?
+some verts will have no constraints and some will have two. two is the max: one seed constraint and one backprop constraint

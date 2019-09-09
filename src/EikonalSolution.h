@@ -15,14 +15,24 @@
 #include <Eigen/Dense>
 
 #include "ctpl.h"
-#include "Mesh.h"
 
 using namespace std;
 
 namespace WGL_DG {
 
-    template<int dim, class TensorFunction, class Mesh>
+    enum FunctionType {
+        TensorFunction,
+        VectorFunction,
+        ScalarFunction,
+    };
+
+    template<int dim, class DynamicsFunction, int FType, class Mesh>
     struct EikonalSolution : Mesh {
+
+    };
+
+    template<int dim, class DynamicsFunction, class Mesh>
+    struct EikonalSolution<dim, DynamicsFunction, FunctionType::TensorFunction, Mesh> : Mesh {
 
         public:
             /// Typedefs
@@ -47,7 +57,7 @@ namespace WGL_DG {
 
         //======================================================================
             /// Setup
-            inline void set_spd_func(TensorFunction *tf){
+            inline void set_spd_func(DynamicsFunction *tf){
                 this->tFunc = tf;
             }
 
@@ -264,7 +274,7 @@ namespace WGL_DG {
     ////////////////////////////////////////////////////////////////////////////
         private:
             /// Properties
-            TensorFunction* tFunc;
+            DynamicsFunction* tFunc;
 
             vector<int> seedVert;
             vector<double> seedVal;

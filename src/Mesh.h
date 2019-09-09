@@ -107,7 +107,7 @@ namespace WGL_DG {
                 idx = 0;
                 for(int i=dim-1; i>-1; i--){
                     if(vec[i] >= discretization[i]){
-                        idx = std::numeric_limits<int>::infinity();
+                        idx = -1;
                         return;
                     }
                     factor /= discretization[i];
@@ -120,7 +120,7 @@ namespace WGL_DG {
                 idx = 0;
                 for(int i=dim-1; i>-1; i--){
                     if(vec[i] >= disc){
-                        idx = std::numeric_limits<int>::infinity();
+                        idx = -1;
                         return;
                     }
                     factor /= disc;
@@ -271,7 +271,6 @@ namespace WGL_DG {
                     incrementNdIndex(idxVec, nDisc);
                 }
 
-                Vector<int> triDisc;
                 triDisc[0] = nDisc[0]-1;
                 triDisc[1] = 2*(nDisc[1]-1);
                 nTri = triDisc.prod();
@@ -282,6 +281,26 @@ namespace WGL_DG {
                     incrementNdIndex(triIdx, triDisc);
                 }
 
+            }
+            
+        //______________________________________________________________________
+            inline int insideTriangle(Vector<double> vec) const {
+                double x = vec[0];
+                double y = vec[1];
+                int xIdx = (x-loBounds[0])/dx[0];  // Truncates correctly
+                double xRem = (x-loBounds[0])/dx[0] - xIdx;
+                double xRemNorm = xRem/dx[0];
+                int yTempIdx = (y-loBounds[1])/dx[1];
+                double yRem = (y-loBounds[1])/dx[1] - yTempIdx;
+                double yRemNorm = yRem/dx[1];
+                bool topTri = ( yRemNorm > xRemNorm );
+                int yIdx = 2*yTempIdx + topTri;
+                Vector<int> triVec;
+                triVec[0] = xIdx;
+                triVec[1] = yIdx;
+                int ans;
+                index_n2one(triVec, ans, triDisc);
+                return ans;
             }
 
 
@@ -404,13 +423,13 @@ namespace WGL_DG {
                 int factor = discretization.prod();
                 idx = 0;
                 if(vec[1] >= discretization[1]){
-                    idx = std::numeric_limits<int>::infinity();
+                    idx = -1;
                     return;
                 }
                 factor /= discretization[1];
                 idx += factor*vec[1];
                 if(vec[0] >= discretization[0]){
-                    idx = std::numeric_limits<int>::infinity();
+                    idx = -1;
                     return;
                 }
                 factor /= discretization[0];
@@ -421,13 +440,13 @@ namespace WGL_DG {
                 int factor = disc*disc;
                 idx = 0;
                 if(vec[1] >= disc){
-                    idx = std::numeric_limits<int>::infinity();
+                    idx = -1;
                     return;
                 }
                 factor /= disc;
                 idx += factor*vec[1];
                 if(vec[0] >= disc){
-                    idx = std::numeric_limits<int>::infinity();
+                    idx = -1;
                     return;
                 }
                 factor /= disc;
@@ -451,6 +470,7 @@ namespace WGL_DG {
             Vector<double> dx;
             Vector<double> loBounds;
             Vector<double> hiBounds;
+            Vector<int> triDisc;
 
     };
 
