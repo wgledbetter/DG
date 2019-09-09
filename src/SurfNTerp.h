@@ -2,9 +2,14 @@
 
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include <bits/stdc++.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <ctime>
 
 #include <Eigen/Sparse>
-#include <Eigen/PardisoSupport>
+#include <Eigen/SPQRSupport>
 
 #include "Mesh.h"
 
@@ -44,9 +49,14 @@ namespace WGL_DG {
                 seedVal = vals;
             }
             
-            //__________________________________________________________________
+        //______________________________________________________________________
             inline void set_dt(double in){
                 dt = in;
+            }
+            
+        //______________________________________________________________________
+            inline void set_vec_func(VectorFunction *vf){
+                vFunc = vf;
             }
             
             
@@ -102,11 +112,20 @@ namespace WGL_DG {
                 // Store backprops in correct location in A
                 for(int i=0; i<nBckp; i++){
                     int v = backprop_active[i];
-                    // A(i,v) = -1;
-                    tripVec.push_back(Trip(i, v, -1));
+                    
+                    bool source_constraint = false;
                     for(int j=0; j<3; j++){
                         // A(i, Mesh::triangles[backTri[v]][j]) = weights[v][j];
-                        tripVec.push_back(Trip(i, Mesh::triangles[backTri[v]][j], weights[v][j]));
+                        if(Mesh::triangles[backTri[v]][j] == v){
+                            tripVec.push_back(Trip(i, v, weights[v][j]-1));
+                            source_constraint = true;
+                        }else{
+                            tripVec.push_back(Trip(i, Mesh::triangles[backTri[v]][j], weights[v][j]));
+                        }
+                    }
+                    if(!source_constraint){
+                        // A(i,v) = -1;
+                        tripVec.push_back(Trip(i, v, -1));
                     }
 
                     // Calc HJB constraints
@@ -131,10 +150,49 @@ namespace WGL_DG {
             
         //______________________________________________________________________
             inline void solve(){
-                PardisoLDLT< SparseMatrix<double> > solver;
+                SPQR< SparseMatrix<double> > solver;
                 solver.compute(A);
                 if(solver.info() == Eigen::Success){
                     val = solver.solve(b);
+                    if(solver.info() == Eigen::Success){
+                        cout << "  Solved" << endl;
+                    }
+                }
+            }
+            
+            
+        //======================================================================
+            inline void textFileOutput(){
+                std::time_t t = time(0);
+                struct tm * now = localtime( & t );
+                char currentTime_buffer [80];
+                std::strftime (currentTime_buffer, 80, "%F_%T", now);
+                
+                Eigen::IOFormat Hector(Eigen::FullPrecision, 0, "", ", ", "", "", "", "");
+                
+                std::ostringstream foldName;
+                foldName << "out/" << currentTime_buffer;
+                if( mkdir(foldName.str().c_str(), 0777) != -1 ){
+                    // Save Value and Vertex
+                    std::ostringstream valFname;
+                    valFname << foldName.str().c_str() << "/SurfNTerp_Value.txt";
+                    std::ofstream save_val;
+                    save_val.open(valFname.str());
+                    
+                    std::ostringstream vertFname;
+                    vertFname << foldName.str().c_str() << "/SurfNTerp_Vertex.txt";
+                    std::ofstream save_vert;
+                    save_vert.open(vertFname.str());
+                    
+                    if( save_val.is_open() && save_vert.is_open()){
+                        for(int i=0; i<Mesh::nVert; i++){
+                            save_val << val[i] << '\n';
+                            save_vert << Mesh::verts[i].format(Hector) << '\n';
+                        }
+                    }
+                    save_val.close();
+                    save_vert.close();
+                
                 }
             }
             

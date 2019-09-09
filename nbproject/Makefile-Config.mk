@@ -23,7 +23,7 @@ AS=as
 # Macros
 CND_PLATFORM=GNU-Linux
 CND_DLIB_EXT=so
-CND_CONF=Perf_Release
+CND_CONF=Config
 CND_DISTDIR=dist
 CND_BUILDDIR=build
 
@@ -52,7 +52,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=-L/home/wgledbetter/Install/intel/mkl/lib/intel64 -L../../Programs/SuiteSparse/SuiteSparse/lib -Wl,-rpath,'../../Install/intel/mkl/lib/intel64' -Wl,-rpath,'../../Programs/SuiteSparse/SuiteSparse/lib' -lmkl_core -lmkl_sequential -lmkl_intel_lp64 -lspqr -lamd -lcholmod
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -65,7 +65,7 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dg: ${OBJECTFILES}
 ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O3 -DEIGEN_USE_MKL_ALL -I../../Install/intel/mkl/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g -DEIGEN_USE_MKL_ALL -I../../Install/intel/mkl/include -I../../Programs/SuiteSparse/SuiteSparse/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:

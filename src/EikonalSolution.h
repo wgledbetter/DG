@@ -146,12 +146,12 @@ namespace WGL_DG {
                 if( mkdir(foldName.str().c_str(), 0777) != -1 ){
                     {  // Save Value and Vertex
                         std::ostringstream valFname;
-                        valFname << foldName.str().c_str() << "/Value.txt";
+                        valFname << foldName.str().c_str() << "/Eikonal_Value.txt";
                         std::ofstream save_val;
                         save_val.open(valFname.str());
                         
                         std::ostringstream vertFname;
-                        vertFname << foldName.str().c_str() << "/Vertex.txt";
+                        vertFname << foldName.str().c_str() << "/Eikonal_Vertex.txt";
                         std::ofstream save_vert;
                         save_vert.open(vertFname.str());
                         

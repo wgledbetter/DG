@@ -14,11 +14,7 @@
             </sourceRootList>
             <confList>
                 <confElem>
-                    <name>Debug</name>
-                    <type>1</type>
-                </confElem>
-                <confElem>
-                    <name>Perf_Release</name>
+                    <name>Config</name>
                     <type>1</type>
                 </confElem>
             </confList>

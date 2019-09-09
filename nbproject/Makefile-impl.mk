@@ -27,11 +27,11 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=DG
 
 # Active Configuration
-DEFAULTCONF=Debug
+DEFAULTCONF=Config
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=Debug Perf_Release 
+ALLCONFS=Config 
 
 
 # build

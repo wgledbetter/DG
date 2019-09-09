@@ -19,6 +19,7 @@
         <itemPath>src/Mesh.h</itemPath>
         <itemPath>src/SurfNTerp.h</itemPath>
         <itemPath>src/TensorFunction.h</itemPath>
+        <itemPath>src/VectorFunction.h</itemPath>
         <itemPath>src/ctpl.h</itemPath>
       </logicalFolder>
       <itemPath>main.cpp</itemPath>
@@ -40,7 +41,7 @@
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="Debug" type="1">
+    <conf name="Config" type="1">
       <toolsSet>
         <compilerSet>default</compilerSet>
         <dependencyChecking>true</dependencyChecking>
@@ -48,45 +49,35 @@
       </toolsSet>
       <compileType>
         <ccTool>
-          <commandLine>-march=native -mtune=native -std=c++17 -fPIC -pthread</commandLine>
-        </ccTool>
-      </compileType>
-      <item path="main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/DirectionalSolution.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/EikonalSolution.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/FIM.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/Mesh.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/SurfNTerp.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/TensorFunction.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/ctpl.h" ex="false" tool="3" flavor2="0">
-      </item>
-    </conf>
-    <conf name="Perf_Release" type="1">
-      <toolsSet>
-        <compilerSet>default</compilerSet>
-        <dependencyChecking>true</dependencyChecking>
-        <rebuildPropChanged>false</rebuildPropChanged>
-      </toolsSet>
-      <compileType>
-        <ccTool>
-          <developmentMode>6</developmentMode>
           <incDir>
             <pElem>../../Install/intel/mkl/include</pElem>
+            <pElem>../../Programs/SuiteSparse/SuiteSparse/include</pElem>
           </incDir>
           <commandLine>-march=native -mtune=native -std=c++17 -fPIC -pthread</commandLine>
           <preprocessorList>
             <Elem>EIGEN_USE_MKL_ALL</Elem>
           </preprocessorList>
         </ccTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>/home/wgledbetter/Install/intel/mkl/lib/intel64</pElem>
+            <pElem>../../Programs/SuiteSparse/SuiteSparse/lib</pElem>
+          </linkerAddLib>
+          <linkerDynSerch>
+            <pElem>../../Install/intel/mkl/lib/intel64</pElem>
+            <pElem>../../Programs/SuiteSparse/SuiteSparse/lib</pElem>
+          </linkerDynSerch>
+          <linkerLibItems>
+            <linkerLibLibItem>mkl_core</linkerLibLibItem>
+            <linkerLibLibItem>mkl_sequential</linkerLibLibItem>
+            <linkerLibLibItem>mkl_intel_lp64</linkerLibLibItem>
+            <linkerLibLibItem>spqr</linkerLibLibItem>
+            <linkerLibLibItem>amd</linkerLibLibItem>
+            <linkerLibLibItem>cholmod</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
       </compileType>
-      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      <item path="main.cpp" ex="false" tool="1" flavor2="9">
       </item>
       <item path="src/DirectionalSolution.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -99,6 +90,8 @@
       <item path="src/SurfNTerp.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/TensorFunction.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/VectorFunction.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/ctpl.h" ex="false" tool="3" flavor2="0">
       </item>
