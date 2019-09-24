@@ -15,16 +15,16 @@ int main() {
     
     bool breakp;
     
-    if(0) {
+    if(1) {
         const int dim = 2;
     
         FastEdgesTensorFunction<dim> itf;
     
-        EikonalSolution< dim, FastEdgesTensorFunction<dim>, Mesh<dim, MeshType::Regular> > eikSol;
+        EikonalSolution< dim, FastEdgesTensorFunction<dim>, Mesh<dim, MeshType::RecTriangular> > eikSol;
     
         for(int i=0; i<dim; i++){
             eikSol.set_bounds(i, -1, 1);
-            eikSol.set_nDisc(i, 50);
+            eikSol.set_nDisc(i, 250);
         }
     
         eikSol.gen_mesh();
@@ -37,7 +37,13 @@ int main() {
         seedVert.push_back(0);
         seedVal.push_back(0.0);
 
-        seedVert.push_back(624);
+        seedVert.push_back(12240);
+        seedVal.push_back(0.0);
+        
+        seedVert.push_back(55200);
+        seedVal.push_back(0.0);
+        
+        seedVert.push_back(31375);
         seedVal.push_back(0.0);
     
         eikSol.set_seed(seedVert, seedVal);
@@ -52,7 +58,7 @@ int main() {
         eikSol.textFileOutput();
     }
     
-    if(1){
+    if(0){
         SurfNTerp<2, ParabolicSinkVectorFunction<2>, Mesh<2, MeshType::RecTriangular> > snt;
         
         ParabolicSinkVectorFunction<2> psvf;

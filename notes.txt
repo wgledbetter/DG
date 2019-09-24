@@ -27,3 +27,8 @@ If I break it down into a FIM class, what would it need?
 9 Sep
 how to do constraint indexing?
 some verts will have no constraints and some will have two. two is the max: one seed constraint and one backprop constraint
+
+
+11 Sep
+Add alternating triangle directions to mesh
+?? Dynamics-based mesh generation ??
