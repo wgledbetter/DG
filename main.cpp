@@ -15,7 +15,20 @@ int main() {
     
     bool breakp;
     
-    if(1) {
+    if(1){
+        struct MyStruct {
+            double param;
+        };
+        
+        MyStruct* pt;
+        {
+            pt = new MyStruct;
+            pt->param = 12.5;
+        }
+        cout << pt->param << endl;
+    }
+    
+    if(0) {
         const int dim = 2;
     
         FastEdgesTensorFunction<dim> itf;

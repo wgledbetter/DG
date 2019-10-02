@@ -32,3 +32,7 @@ some verts will have no constraints and some will have two. two is the max: one 
 11 Sep
 Add alternating triangle directions to mesh
 ?? Dynamics-based mesh generation ??
+
+
+1 Oct
+In PontaniConway object, probably change set_T and set_mass to one set_acc. Characteristic acceleration or something.
