@@ -16,22 +16,22 @@ namespace WGL_DG {
             using Evader = EvaderDynamics;
 
             template<class Scalar>
-            using PxVector = Matrix<Scalar, P_XV, 1>;
+            using PxVector = Matrix<Scalar, Pursuer::XV, 1>;
             template<class Scalar>
-            using PuVector = Matrix<Scalar, P_UV, 1>;
+            using PuVector = Matrix<Scalar, Pursuer::UV, 1>;
             template<class Scalar>
-            using PxuVector = Matrix<Scalar, P_XV+P_UV, 1>;
+            using PxuVector = Matrix<Scalar, Pursuer::XV+Pursuer::UV, 1>;
             template<class Scalar>
-            using PJacMatrix = Matrix<Scalar, P_XV, P_XV+P_UV>;
+            using PJacMatrix = Matrix<Scalar, Pursuer::XV, Pursuer::XV+Pursuer::UV>;
 
             template<class Scalar>
-            using ExVector = Matrix<Scalar, E_XV, 1>;
+            using ExVector = Matrix<Scalar, Evader::XV, 1>;
             template<class Scalar>
-            using EuVector = Matrix<Scalar, E_UV, 1>;
+            using EuVector = Matrix<Scalar, Evader::UV, 1>;
             template<class Scalar>
-            using ExuVector = Matrix<Scalar, E_XV+E_UV, 1>;
+            using ExuVector = Matrix<Scalar, Evader::XV+Evader::UV, 1>;
             template<class Scalar>
-            using EJacMatrix = Matrix<Scalar, E_XV, E_XV+E_UV>;
+            using EJacMatrix = Matrix<Scalar, Evader::XV, Evader::XV+Evader::UV>;
 
 
         //======================================================================
@@ -67,13 +67,13 @@ namespace WGL_DG {
 
         //______________________________________________________________________
 
-            inline void set_pursuer_state_input(const Array<int, P_XV, 1> purVar){
+            inline void set_pursuer_state_input(const Array<int, Pursuer::XV, 1> purVar){
                 // Which part of the full state affects the pursuer's dynamics?
                 pInStateIdx = purVar;
-                pInStateControlIdx.head<P_XV>() = purVar;
+                pInStateControlIdx.template head<P_XV>() = purVar;
             }
 
-            inline void set_pursuer_state_output(const Array<int, P_XV, 1> purVar){
+            inline void set_pursuer_state_output(const Array<int, Pursuer::XV, 1> purVar){
                 // Which state variables is the pursuer affecting?
                 pOutStateIdx = purVar;
             }
@@ -81,18 +81,18 @@ namespace WGL_DG {
             inline void set_pursuer_control_input(Array<int, Pursuer::UV, 1> purCon){
                 // What part of the control vector is for the pursuer?
                 pInControlIdx = purCon;
-                pInStateControlIdx.tail<P_UV>() = purCon + XV;
+                pInStateControlIdx.template tail<P_UV>() = purCon + XV;
             }
 
         //______________________________________________________________________
 
-            inline void set_evader_state_input(const Array<int, E_XV, 1> evaVar){
+            inline void set_evader_state_input(const Array<int, Evader::XV, 1> evaVar){
                 // Which part of the full state affects the evader's dynamics?
                 eInStateIdx = evaVar;
-                eIntStateControlIdx.head<E_XV>() = evaVar;
+                eInStateControlIdx.template head<E_XV>() = evaVar;
             }
 
-            inline void set_evader_state_output(const Array<int, E_XV, 1> evaVar){
+            inline void set_evader_state_output(const Array<int, Evader::XV, 1> evaVar){
                 // Which state variables is the evader affecting?
                 eOutStateIdx = evaVar;
             }
@@ -100,7 +100,7 @@ namespace WGL_DG {
             inline void set_evader_control_input(const Array<int, Evader::UV, 1> evaCon){
                 // What part of the control vector is for the evader?
                 eInControlIdx = evaCon;
-                eIntStateControlIdx.tail<E_UV>() = evaVar + XV;
+                eInStateControlIdx.template tail<E_UV>() = evaCon + XV;
             }
 
         //______________________________________________________________________
@@ -128,7 +128,7 @@ namespace WGL_DG {
                     const Array<int, E_XV, 1> evaVar = Array<int, E_XV, 1>::LinSpaced(E_XV, P_XV, P_XV+E_XV-1);
                     set_evader_state_input(evaVar);
                     set_evader_state_output(evaVar);
-                    const Array<int, E_UV, 1> evaCon = Array<int E_UV, 1>::LinSpaced(E_UV, P_UV, P_UV+E_UV-1);
+                    const Array<int, E_UV, 1> evaCon = Array<int, E_UV, 1>::LinSpaced(E_UV, P_UV, P_UV+E_UV-1);
                     set_evader_control_input(evaCon);
                 }else{
                     // BAD
@@ -201,12 +201,12 @@ namespace WGL_DG {
                 EJacMatrix<Scalar> jE;
 
                 p->compute(xP, fxP);
-                p->jacobian(xP, jxP);
+                p->jacobian(xP, jP);
                 e->compute(xE, fxE);
-                e->jacobian(xE, jxE);
+                e->jacobian(xE, jE);
 
                 process_output_state(fxP, fxE, fx);
-                process_output_jacobian(jxP, jxE, jx);
+                process_output_jacobian(jP, jE, jx);
             }
 
         //______________________________________________________________________

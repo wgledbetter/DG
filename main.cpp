@@ -8,24 +8,28 @@
 #include "src/SurfNTerp.h"
 #include "src/VectorFunction.h"
 
+#include "src/PontaniConway3dDynamics.h"
+#include "src/DynamicGame.h"
+
 using namespace std;
 using namespace WGL_DG;
+
+
 
 int main() {
     
     bool breakp;
     
     if(1){
-        struct MyStruct {
-            double param;
-        };
         
-        MyStruct* pt;
-        {
-            pt = new MyStruct;
-            pt->param = 12.5;
-        }
-        cout << pt->param << endl;
+        PontaniConway3dDynamics testPursuer, testEvader;
+        SeparableDynamicGame<12, 4, PontaniConway3dDynamics, PontaniConway3dDynamics> DG;
+        
+        DG.gen_pursuer();
+        DG.gen_evader();
+        
+        DG.pointer_to_evader()->set_mass(12);
+        
     }
     
     if(0) {

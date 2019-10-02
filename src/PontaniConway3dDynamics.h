@@ -200,7 +200,7 @@ namespace WGL_DG {
                 su2 = sin(u2);
                 cu2 = cos(u2);
 
-                AdjVarType::Scalar l1, l2, l3, l4, l5, l6;
+                typename AdjVarType::Scalar l1, l2, l3, l4, l5, l6;
                 l1 = adj[0];
                 l2 = adj[1];
                 l3 = adj[2];
@@ -227,12 +227,22 @@ namespace WGL_DG {
                 using std::cos;
                 using std::sin;
                 using std::atan;
+                
+                Scalar x2, x3;
+                x2 = x[1];
+                x3 = x[2];
+                
+                typename AdjVarType::Scalar l2, l3, l6;
+                l2 = adj[1];
+                l3 = adj[2];
+                l6 = adj[5];
 
                 MatrixBase<OutType> & u = u_.const_cast_derived();
 
-                uOpts = ext_adjTransGrad_subroutine(x, adj);
+                std::vector<UVec> uOpts = ext_adjTransGrad_subroutine(x, adj);
 
                 // Use 2nd adjoint derivative to find min or max solution
+                u = UVec::Zero();
                 for(int i=0; i<4; i++){
                     OScalar H11, H12, H22;
                     H11 = -T*cos(uOpts[i][1])*(x2*l2*cos(uOpts[i][0]) + l3*sin(uOpts[i][0]))/(m*x2);
@@ -254,10 +264,22 @@ namespace WGL_DG {
                 using std::cos;
                 using std::sin;
                 using std::atan;
+                
+                Scalar x2, x3;
+                x2 = x[1];
+                x3 = x[2];
+                
+                typename AdjVarType::Scalar l2, l3, l6;
+                l2 = adj[1];
+                l3 = adj[2];
+                l6 = adj[5];
+                
+                MatrixBase<OutType> & u = u_.const_cast_derived();
 
-                uOpts = ext_adjTransGrad_subroutine(x, adj);
+                std::vector<UVec> uOpts = ext_adjTransGrad_subroutine(x, adj);
 
                 // Use 2nd adjoint derivative to find min or max solution
+                u = UVec::Zero();
                 for(int i=0; i<4; i++){
                     OScalar H11, H12, H22;
                     H11 = -T*cos(uOpts[i][1])*(x2*l2*cos(uOpts[i][0]) + l3*sin(uOpts[i][0]))/(m*x2);
@@ -276,7 +298,7 @@ namespace WGL_DG {
         protected:
             /// Methods
             template<class InType, class AdjVarType, class OutType>
-            inline std::vector<Matrix<OutType::Scalar, 2, 1> > ext_adjTransGrad_subroutine(const MatrixBase<InType> & x, const MatrixBase<AdjVarType> & adj) const {
+            inline std::vector<Matrix<typename OutType::Scalar, 2, 1> > ext_adjTransGrad_subroutine(const MatrixBase<InType> & x, const MatrixBase<AdjVarType> & adj) const {
                 using Scalar = typename InType::Scalar;
                 using OScalar = typename OutType::Scalar;
                 using UVec = Matrix<OScalar, 2, 1>;
@@ -294,7 +316,7 @@ namespace WGL_DG {
                 u1 = x[6];
                 u2 = x[7];
 
-                AdjVarType::Scalar l1, l2, l3, l4, l5, l6;
+                typename AdjVarType::Scalar l1, l2, l3, l4, l5, l6;
                 l1 = adj[0];
                 l2 = adj[1];
                 l3 = adj[2];
@@ -310,16 +332,16 @@ namespace WGL_DG {
                 u2ba = atan((l6 - l3*cos(x3)*sin(u1b))/(x2*l2*cos(x3)*cos(u1b)));
                 u2bb = u2ba + M_PI;
 
-                std::vector<UVec> uOpts
+                std::vector<UVec> uOpts;
                 uOpts.resize(4);
                 uOpts[0][0] = u1a;
-                uOpts[0][1] = u1aa;
+                uOpts[0][1] = u2aa;
                 uOpts[1][0] = u1a;
-                uOpts[1][1] = u1ab;
+                uOpts[1][1] = u2ab;
                 uOpts[2][0] = u1b;
-                uOpts[2][1] = u1ba;
+                uOpts[2][1] = u2ba;
                 uOpts[3][0] = u1b;
-                uOpts[3][1] = u1bb;
+                uOpts[3][1] = u2bb;
 
                 return uOpts;
             }

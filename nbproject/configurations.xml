@@ -13,14 +13,20 @@
                    displayName="Source Files"
                    projectFiles="true">
       <logicalFolder name="src" displayName="src" projectFiles="true">
+        <itemPath>src/CRTPBase.h</itemPath>
         <itemPath>src/DirectionalSolution.h</itemPath>
+        <itemPath>src/DynamicGame.h</itemPath>
+        <itemPath>src/Dynamics.h</itemPath>
         <itemPath>src/EikonalSolution.h</itemPath>
         <itemPath>src/FIM.h</itemPath>
         <itemPath>src/Mesh.h</itemPath>
+        <itemPath>src/PontaniConway3dDynamics.h</itemPath>
+        <itemPath>src/SemiDirect.h</itemPath>
         <itemPath>src/SurfNTerp.h</itemPath>
         <itemPath>src/TensorFunction.h</itemPath>
         <itemPath>src/VectorFunction.h</itemPath>
         <itemPath>src/ctpl.h</itemPath>
+        <itemPath>src/pch.h</itemPath>
       </logicalFolder>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
@@ -79,13 +85,23 @@
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="9">
       </item>
+      <item path="src/CRTPBase.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/DirectionalSolution.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/DynamicGame.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/Dynamics.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/EikonalSolution.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/FIM.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/Mesh.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/PontaniConway3dDynamics.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/SemiDirect.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/SurfNTerp.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -94,6 +110,8 @@
       <item path="src/VectorFunction.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/ctpl.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/pch.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>

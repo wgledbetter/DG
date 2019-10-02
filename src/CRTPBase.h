@@ -1,7 +1,8 @@
 #pragma once
-#include "../pch.h"
 
-namespace ASRLib {
+#include "pch.h"
+
+namespace WGL_DG {
 
 	template<class Derived>
 	struct CRTPBase {
