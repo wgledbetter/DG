@@ -35,7 +35,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/main.o
+	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/src/pch.o
 
 
 # C Compiler Flags
@@ -66,6 +67,11 @@ ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DEIGEN_USE_MKL_ALL -I../../Install/intel/mkl/include -I../../Programs/SuiteSparse/SuiteSparse/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+
+${OBJECTDIR}/src/pch.o: src/pch.cpp
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DEIGEN_USE_MKL_ALL -I../../Install/intel/mkl/include -I../../Programs/SuiteSparse/SuiteSparse/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/pch.o src/pch.cpp
 
 # Subprojects
 .build-subprojects:

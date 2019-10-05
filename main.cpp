@@ -6,7 +6,7 @@
 #include "src/Mesh.h"
 #include "src/TensorFunction.h"
 #include "src/SurfNTerp.h"
-#include "src/VectorFunction.h"
+#include "src/VectorFunctionSpec.h"
 
 #include "src/PontaniConway3dDynamics.h"
 #include "src/DynamicGame.h"

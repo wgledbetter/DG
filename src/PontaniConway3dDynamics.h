@@ -1,20 +1,18 @@
 #pragma once
 
-#include <vector>
-#include <cmath>
-#include <Eigen/Core>
+#include "pch.h"
 
-#include "Dynamics.h"
+#include "ODE.h"
 
 using namespace Eigen;
 
 namespace WGL_DG {
 
-    struct PontaniConway3dDynamics : Dynamics<PontaniConway3dDynamics, 6, 2, 0> {
+    struct PontaniConway3dDynamics : ODE<PontaniConway3dDynamics, 6, 2, 0> {
 
         public:
             /// Typedefs
-            using Base = Dynamics;
+            using Base = ODE<PontaniConway3dDynamics, 6, 2, 0>;
 
 
         //======================================================================

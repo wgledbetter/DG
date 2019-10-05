@@ -36,3 +36,7 @@ Add alternating triangle directions to mesh
 
 1 Oct
 In PontaniConway object, probably change set_T and set_mass to one set_acc. Characteristic acceleration or something.
+
+
+2 Oct
+Establish naming convention for costatedynamics()

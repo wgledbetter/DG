@@ -1,13 +1,15 @@
 #pragma once
 
-#include <Eigen/Core>
+#include "pch.h"
 
-#include "DynamicGame.h"
+#include "ODE.h"
+
+using namespace Eigen;
 
 namespace WGL_DG {
 
-    template<class SeparableGame, class PursuerTranscription, class EvaderTranscription, class CostateTranscription=LGL7>
-    struct SemiDirect : SeparableGame, PursuerTranscription, EvaderTranscription, CostateTranscription {
+    template<class SeparableGame>
+    struct SemiDirect : ODE<SemiDirect, /* P_XV + E_XV + E_costate */, /* P_UV + E_UV */, /* P_PV + E_PV */> {
 
         public:
             /// Typedefs
@@ -22,6 +24,19 @@ namespace WGL_DG {
 
         //======================================================================
             /// Primary Methods
+            template<class InType, class OutType>
+            inline void compute(const MatrixBase<InType> & x, MatrixBase<OutType> const & fx_) const {
+
+                using IScalar = typename InType::Scalar;
+
+
+
+            }
+
+
+        //======================================================================
+            /// Properties
+
 
 
 ////////////////////////////////////////////////////////////////////////////////

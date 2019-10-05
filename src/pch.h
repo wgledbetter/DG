@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <cmath>
 #include <math.h>
 #include <complex>
 #include <Eigen/Core>

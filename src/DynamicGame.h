@@ -1,7 +1,6 @@
 #pragma once
 
-#include <vector>
-#include <Eigen/Core>
+#include "pch.h"
 
 using namespace Eigen;
 
@@ -11,6 +10,17 @@ namespace WGL_DG {
     struct SeparableDynamicGame {
 
         public:
+            /// Properties
+            static const int XV = _XV;
+            static const int UV = _UV;
+            static const int XtUV = _XV + 1 + _UV;
+            static const int P_XV = Pursuer::XV;
+            static const int P_UV = Pursuer::UV;
+            static const int E_XV = Evader::XV;
+            static const int E_UV = Evader::UV;
+
+
+        //======================================================================
             /// Typedefs
             using Pursuer = PursuerDynamics;
             using Evader = EvaderDynamics;
@@ -210,8 +220,30 @@ namespace WGL_DG {
             }
 
         //______________________________________________________________________
+            template<class InType, class AdjGradType, class AdjVarType>
+            inline void adjointgradient(const MatrixBase<InType> & x, MatrixBase<AdjGradType> const & adjgrad_, const MatrixBase<AdjVarType> & adjvars) const {
 
-            inline void hessian(){
+                using Scalar = typename AdjGradType::Scalar;
+
+                Matrix<Scalar, XV, XV+UV> jac;
+                jacobian(x, jac);
+
+                MatrixBase<OutType> & adjgrad = adjgrad_.const_cast_derived();
+                adjgrad = jac*adjvars;
+
+            }
+            
+        //______________________________________________________________________
+            template<class InType, class AdjGradType, class AdjVarType>
+            inline void adjointtransposegradient(const MatrixBase<InType> & x, MatrixBase<AdjGradType> const & adjgrad_, const MatrixBase<AdjVarType> & adjvars) const {
+
+                using Scalar = typename AdjGradType::Scalar;
+
+                Matrix<Scalar, XV, XV+UV> jac;
+                jacobian(x, jac);
+
+                MatrixBase<OutType> & adjgrad = adjgrad_.const_cast_derived();
+                adjgrad = jac.transpose()*adjvars;
 
             }
 
@@ -225,16 +257,6 @@ namespace WGL_DG {
             Evader* pointer_to_evader() const {
                 return e;
             }
-
-
-        //======================================================================
-            /// Properties
-            static const int XV = _XV;
-            static const int UV = _UV;
-            static const int P_XV = Pursuer::XV;
-            static const int P_UV = Pursuer::UV;
-            static const int E_XV = Evader::XV;
-            static const int E_UV = Evader::UV;
 
 
     ////////////////////////////////////////////////////////////////////////////

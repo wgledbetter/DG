@@ -25,7 +25,9 @@
         <itemPath>src/SurfNTerp.h</itemPath>
         <itemPath>src/TensorFunction.h</itemPath>
         <itemPath>src/VectorFunction.h</itemPath>
+        <itemPath>src/VectorFunctionSpec.h</itemPath>
         <itemPath>src/ctpl.h</itemPath>
+        <itemPath>src/pch.cpp</itemPath>
         <itemPath>src/pch.h</itemPath>
       </logicalFolder>
       <itemPath>main.cpp</itemPath>
@@ -109,7 +111,11 @@
       </item>
       <item path="src/VectorFunction.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="src/VectorFunctionSpec.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/ctpl.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/pch.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/pch.h" ex="false" tool="3" flavor2="0">
       </item>
