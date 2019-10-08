@@ -2,6 +2,8 @@
 #include <vector>
 #include <iostream>
 
+#include "src/pch.h"
+
 #include "src/EikonalSolution.h"
 #include "src/Mesh.h"
 #include "src/TensorFunction.h"
@@ -11,8 +13,62 @@
 #include "src/PontaniConway3dDynamics.h"
 #include "src/DynamicGame.h"
 
+#include "src/TypeErasure.h"
+#include "src/VectorFunctionTypeErasure.h"
+
 using namespace std;
 using namespace WGL_DG;
+
+template<int N>
+struct MyStruct1 {
+    template<typename T>
+    void theFunction(T & x) const {
+        x = x*N;
+    }
+};
+
+template<int N>
+struct MyStruct2 {
+    template<typename T>
+    void theFunction(T & x) const {
+        x = N;
+    }
+    
+    void thisOtherFunction() const {
+        int wow = 12;
+    }
+};
+
+struct MySpec {
+    struct Concept {
+        virtual ~Concept() = default;
+        virtual void theFunction(int & x) const = 0;
+        virtual void theFunction(double & x) const = 0;
+    };
+    template<class Holder>
+    struct Model : public Holder, public virtual Concept {
+        using Holder::Holder;
+        virtual void theFunction(int & x) const override {
+            return rubber_types::model_get(this).theFunction(x);
+        }
+        virtual void theFunction(double & x) const override {
+            return rubber_types::model_get(this).theFunction(x);
+        }
+    };
+    template<class Container>
+    struct ExternalInterface : public Container {
+        using Container::Container;
+        void theFunction(int & x) const {
+            return rubber_types::interface_get(this).theFunction(x);
+        }
+        void theFunction(double & x) const {
+            return rubber_types::interface_get(this).theFunction(x);
+        }
+    };
+};
+
+using MyConcept = rubber_types::TypeErasure<MySpec>;
+
 
 
 
@@ -21,6 +77,38 @@ int main() {
     bool breakp;
     
     if(1){
+        vector<MyConcept> vec;
+        MyStruct1<3> ms13;
+        MyStruct1<7> ms17;
+        MyStruct2<5> ms25;
+        vec.push_back(ms13);
+        vec.push_back(ms17);
+        vec.push_back(ms25);
+        
+        int x1 = 12;
+        double x2 = 3.14;
+        vec[0].theFunction(x1);
+        vec[1].theFunction(x2);
+        vec[2].theFunction(x2);
+        
+        std::vector<VectorFunction_EigenRefCall> vf_vec;
+        PontaniConway3dDynamics pc3d_1, pc3d_2;
+        pc3d_1.set_mass(10);
+        pc3d_1.set_mu(9.81);
+        pc3d_1.set_thrust(0.001);
+        pc3d_2.set_mass(20);
+        pc3d_2.set_mu(9.81);
+        pc3d_2.set_thrust(0.0015);
+        
+        PontaniConway3dDynamics::InputVec<double> x;
+        x.Random();
+        Matrix<double, 8, 1> fx;
+        Array<int, 6, 1> idx;
+        idx.LinSpaced(6, 0, 5);
+        pc3d_1.compute(x, fx(seq(1,6)));
+    }
+    
+    if(0){
         
         PontaniConway3dDynamics testPursuer, testEvader;
         SeparableDynamicGame<12, 4, PontaniConway3dDynamics, PontaniConway3dDynamics> DG;

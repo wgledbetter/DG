@@ -16,16 +16,20 @@
         <itemPath>src/CRTPBase.h</itemPath>
         <itemPath>src/DirectionalSolution.h</itemPath>
         <itemPath>src/DynamicGame.h</itemPath>
-        <itemPath>src/Dynamics.h</itemPath>
         <itemPath>src/EikonalSolution.h</itemPath>
         <itemPath>src/FIM.h</itemPath>
         <itemPath>src/Mesh.h</itemPath>
+        <itemPath>src/NLP.h</itemPath>
+        <itemPath>src/ODE.h</itemPath>
         <itemPath>src/PontaniConway3dDynamics.h</itemPath>
         <itemPath>src/SemiDirect.h</itemPath>
         <itemPath>src/SurfNTerp.h</itemPath>
         <itemPath>src/TensorFunction.h</itemPath>
+        <itemPath>src/Transcription.h</itemPath>
+        <itemPath>src/TypeErasure.h</itemPath>
         <itemPath>src/VectorFunction.h</itemPath>
         <itemPath>src/VectorFunctionSpec.h</itemPath>
+        <itemPath>src/VectorFunctionTypeErasure.h</itemPath>
         <itemPath>src/ctpl.h</itemPath>
         <itemPath>src/pch.cpp</itemPath>
         <itemPath>src/pch.h</itemPath>
@@ -60,6 +64,7 @@
           <incDir>
             <pElem>../../Install/intel/mkl/include</pElem>
             <pElem>../../Programs/SuiteSparse/SuiteSparse/include</pElem>
+            <pElem>../../Install/Eigen/eigen-git-mirror</pElem>
           </incDir>
           <commandLine>-march=native -mtune=native -std=c++17 -fPIC -pthread</commandLine>
           <preprocessorList>
@@ -93,13 +98,15 @@
       </item>
       <item path="src/DynamicGame.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="src/Dynamics.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="src/EikonalSolution.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/FIM.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/Mesh.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/NLP.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/ODE.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/PontaniConway3dDynamics.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -109,9 +116,15 @@
       </item>
       <item path="src/TensorFunction.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="src/Transcription.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/TypeErasure.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/VectorFunction.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/VectorFunctionSpec.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/VectorFunctionTypeErasure.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/ctpl.h" ex="false" tool="3" flavor2="0">
       </item>

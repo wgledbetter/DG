@@ -54,8 +54,8 @@ namespace WGL_DG {
                 xi = x[3];
                 phi = x[4];
                 zeta = x[5];
-                alph = x[6];
-                beta = x[7];
+                alph = x[7];
+                beta = x[8];
 
                 Scalar sg, cg, cp, sz, cz, sa, ca, sb, cb;
                 sg = sin(gam);
@@ -96,8 +96,8 @@ namespace WGL_DG {
                 xi = x[3];
                 phi = x[4];
                 zeta = x[5];
-                alph = x[6];
-                beta = x[7];
+                alph = x[7];
+                beta = x[8];
 
                 Scalar sg, cg, cp, sz, cz, sa, ca, sb, cb;
                 sg = sin(gam);
@@ -184,8 +184,8 @@ namespace WGL_DG {
                 x4 = x[3];
                 x5 = x[4];
                 x6 = x[5];
-                u1 = x[6];
-                u2 = x[7];
+                u1 = x[7];
+                u2 = x[8];
 
                 Scalar sx3, cx3, sx5, cx5, sx6, cx6, su1, cu1, su2, cu2;
                 sx3 = sin(x3);
@@ -311,8 +311,8 @@ namespace WGL_DG {
                 x4 = x[3];
                 x5 = x[4];
                 x6 = x[5];
-                u1 = x[6];
-                u2 = x[7];
+                u1 = x[7];
+                u2 = x[8];
 
                 typename AdjVarType::Scalar l1, l2, l3, l4, l5, l6;
                 l1 = adj[0];

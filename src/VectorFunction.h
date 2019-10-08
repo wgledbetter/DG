@@ -4,6 +4,8 @@
 
 #include "CRTPBase.h"
 
+using namespace Eigen;
+
 namespace WGL_DG {
 
     template<class Derived, int _IR, int _OR>
@@ -17,9 +19,9 @@ namespace WGL_DG {
     //==========================================================================
         /// Typedefs
             template<class Scalar>
-            using InputVec = Eigen::Matrix<Scalar, IR, 1>;
+            using InputVec = Matrix<Scalar, IR, 1>;
             template<class Scalar>
-            using OutputVec = Eigen::Matrix<Scalar, OR, 1>;
+            using OutputVec = Matrix<Scalar, OR, 1>;
 
 
     //==========================================================================
@@ -39,10 +41,28 @@ namespace WGL_DG {
             void compute_jacobian(const MatrixBase<InType> & x, MatrixBase<OutType> const & fx_, MatrixBase<JacType> const & jx_) const {
                 this->derived().compute_jacobian(x, fx_, jx_);
             }
+            
+        //______________________________________________________________________
+            template<class InType, class AdjGradType, class AdjVarType>
+            inline void adjointgradient(const MatrixBase<InType> & x, MatrixBase<AdjGradType> const & adjgrad_, const MatrixBase<AdjVarType> & adjvars) const {
+                this->derived().adjointgradient(x, adjgrad_, adjvars);
+            }
+            
+            template<class InType, class AdjGradType, class AdjVarType>
+            inline void adjointtransposegradient(const MatrixBase<InType> & x, MatrixBase<AdjGradType> const & adjgrad_, const MatrixBase<AdjVarType> & adjvars) const {
+                this->derived().adjointtransposegradint(x, adjgrad_, adjvars);
+            }
 
 
     //==========================================================================
         /// Other Methods
+            inline int getIR() {
+                return IR;
+            }
+            
+            inline int getOR() {
+                return OR;
+            }
 
 
     };

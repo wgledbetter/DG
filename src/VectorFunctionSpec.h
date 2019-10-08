@@ -13,10 +13,12 @@ namespace WGL_DG {
         using Base = VectorFunction<ParabolicSinkVectorFunction<dim>, dim, dim>;
 
         template<class Scalar>
-        using Vector = typename Base::template Vector<Scalar>;
+        using InputVec = typename Base::template InputVec<Scalar>;
+        template<class Scalar>
+        using OutputVec = typename Base::template OutputVec<Scalar>;
 
         /// Primary Methods
-        inline Vector<double> compute(Vector<double> x) {
+        inline OutputVec<double> compute(InputVec<double> x) {
             return -x * x.norm();
         }
 

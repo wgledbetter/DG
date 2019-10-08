@@ -10,17 +10,6 @@ namespace WGL_DG {
     struct SeparableDynamicGame {
 
         public:
-            /// Properties
-            static const int XV = _XV;
-            static const int UV = _UV;
-            static const int XtUV = _XV + 1 + _UV;
-            static const int P_XV = Pursuer::XV;
-            static const int P_UV = Pursuer::UV;
-            static const int E_XV = Evader::XV;
-            static const int E_UV = Evader::UV;
-
-
-        //======================================================================
             /// Typedefs
             using Pursuer = PursuerDynamics;
             using Evader = EvaderDynamics;
@@ -42,6 +31,17 @@ namespace WGL_DG {
             using ExuVector = Matrix<Scalar, Evader::XV+Evader::UV, 1>;
             template<class Scalar>
             using EJacMatrix = Matrix<Scalar, Evader::XV, Evader::XV+Evader::UV>;
+
+
+        //======================================================================
+            /// Properties
+            static const int XV = _XV;
+            static const int UV = _UV;
+            static const int XtUV = _XV + 1 + _UV;
+            static const int P_XV = Pursuer::XV;
+            static const int P_UV = Pursuer::UV;
+            static const int E_XV = Evader::XV;
+            static const int E_UV = Evader::UV;
 
 
         //======================================================================
@@ -228,7 +228,7 @@ namespace WGL_DG {
                 Matrix<Scalar, XV, XV+UV> jac;
                 jacobian(x, jac);
 
-                MatrixBase<OutType> & adjgrad = adjgrad_.const_cast_derived();
+                MatrixBase<AdjGradType> & adjgrad = adjgrad_.const_cast_derived();
                 adjgrad = jac*adjvars;
 
             }
@@ -242,7 +242,7 @@ namespace WGL_DG {
                 Matrix<Scalar, XV, XV+UV> jac;
                 jacobian(x, jac);
 
-                MatrixBase<OutType> & adjgrad = adjgrad_.const_cast_derived();
+                MatrixBase<AdjGradType> & adjgrad = adjgrad_.const_cast_derived();
                 adjgrad = jac.transpose()*adjvars;
 
             }

@@ -10,6 +10,8 @@ struct NLP {
 
 	};
 
+	Objective obj;
+
 	//--------------------------------------------------------------------------
 
 	struct EqualityConstraints : VectorFunction {
@@ -57,6 +59,12 @@ struct NLP {
 		ctpl::thread_pool EqThreads;
 
 	};
+
+	EqualityConstraints eqConsts;
+
+	inline void addEqConst(VectorFunction* fun) {
+		this->eqConsts.addEqConst(fun);;
+	}
 
 	//--------------------------------------------------------------------------
 
