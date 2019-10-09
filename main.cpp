@@ -11,7 +11,9 @@
 #include "src/VectorFunctionSpec.h"
 
 #include "src/PontaniConway3dDynamics.h"
-#include "src/DynamicGame.h"
+#include "src/SeparableDynamicGameBase.h"
+#include "src/SeparableDynamicGame.h"
+#include "src/SemiDirect.h"
 
 #include "src/TypeErasure.h"
 #include "src/VectorFunctionTypeErasure.h"
@@ -70,8 +72,6 @@ struct MySpec {
 using MyConcept = rubber_types::TypeErasure<MySpec>;
 
 
-
-
 int main() {
     
     bool breakp;
@@ -101,17 +101,29 @@ int main() {
         pc3d_2.set_thrust(0.0015);
         
         PontaniConway3dDynamics::InputVec<double> x;
-        x.Random();
+        x = PontaniConway3dDynamics::InputVec<double>::Random();
         Matrix<double, 8, 1> fx;
         Array<int, 6, 1> idx;
         idx.LinSpaced(6, 0, 5);
-        pc3d_1.compute(x, fx(seq(1,6)));
+        idx[0] = 0;
+        idx[1] = 2;
+        idx[2] = 4;
+        idx[3] = 1;
+        idx[4] = 3;
+        idx[5] = 5;
+        cout << "Before Calculation fx:" << endl << fx << endl;
+        Matrix<double, 6, 1> tempVec = fx(idx);
+        cout << "Before Calculation tempVec:" << endl << tempVec << endl << endl;
+        pc3d_1.compute(x, tempVec);
+        cout << "After Calculation tempVec:" << endl << tempVec << endl;
+        fx(idx) = tempVec;
+        cout << "After Calculation fx:" << endl << fx << endl;
     }
     
     if(0){
         
         PontaniConway3dDynamics testPursuer, testEvader;
-        SeparableDynamicGame<12, 4, PontaniConway3dDynamics, PontaniConway3dDynamics> DG;
+        SeparableDynamicGame<12, 4, 0, PontaniConway3dDynamics, PontaniConway3dDynamics> DG;
         
         DG.gen_pursuer();
         DG.gen_evader();

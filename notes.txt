@@ -40,3 +40,13 @@ In PontaniConway object, probably change set_T and set_mass to one set_acc. Char
 
 2 Oct
 Establish naming convention for costatedynamics()
+
+
+9 Oct
+Parameter indexing in DynamicGame
+    if _PV == P_PV && _PV == E_PV
+        good
+    if _PV == P_PV + E_PV
+        good
+    else
+        bad

@@ -68,7 +68,7 @@ namespace WGL_DG {
                 sb = sin(beta);
                 cb = cos(beta);
 
-                MatrixBase<OutType> fx = fx_.const_cast_derived();
+                MatrixBase<OutType> & fx = fx_.const_cast_derived();
 
                 fx[0] = v*sg;
                 fx[1] = T*ca*cb/m - mu*sg/(r*r);
@@ -110,7 +110,7 @@ namespace WGL_DG {
                 sb = sin(beta);
                 cb = cos(beta);
 
-                MatrixBase<JacType> jx = jx_.const_cast_derived();
+                MatrixBase<JacType> & jx = jx_.const_cast_derived();
 
                 jx.fill(0);
                 jx(0,1) = sg;
@@ -144,11 +144,8 @@ namespace WGL_DG {
 
             template<class InType, class OutType, class JacType>
             inline void compute_jacobian(const MatrixBase<InType> & x, MatrixBase<OutType> const & fx_, MatrixBase<JacType> const & jx_) const {
-                MatrixBase<OutType> fx = fx_.const_cast_derived();
-                MatrixBase<JacType> jx = jx_.const_cast_derived();
-
-                compute(x, fx);
-                jacobian(x, jx);
+                compute(x, fx_);
+                jacobian(x, jx_);
             }
 
         //______________________________________________________________________
@@ -266,12 +263,12 @@ namespace WGL_DG {
                 Scalar x2, x3;
                 x2 = x[1];
                 x3 = x[2];
-                
+
                 typename AdjVarType::Scalar l2, l3, l6;
                 l2 = adj[1];
                 l3 = adj[2];
                 l6 = adj[5];
-                
+
                 MatrixBase<OutType> & u = u_.const_cast_derived();
 
                 std::vector<UVec> uOpts = ext_adjTransGrad_subroutine(x, adj);

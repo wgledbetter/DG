@@ -15,7 +15,6 @@
       <logicalFolder name="src" displayName="src" projectFiles="true">
         <itemPath>src/CRTPBase.h</itemPath>
         <itemPath>src/DirectionalSolution.h</itemPath>
-        <itemPath>src/DynamicGame.h</itemPath>
         <itemPath>src/EikonalSolution.h</itemPath>
         <itemPath>src/FIM.h</itemPath>
         <itemPath>src/Mesh.h</itemPath>
@@ -23,6 +22,8 @@
         <itemPath>src/ODE.h</itemPath>
         <itemPath>src/PontaniConway3dDynamics.h</itemPath>
         <itemPath>src/SemiDirect.h</itemPath>
+        <itemPath>src/SeparableDynamicGame.h</itemPath>
+        <itemPath>src/SeparableDynamicGameBase.h</itemPath>
         <itemPath>src/SurfNTerp.h</itemPath>
         <itemPath>src/TensorFunction.h</itemPath>
         <itemPath>src/Transcription.h</itemPath>
@@ -96,8 +97,6 @@
       </item>
       <item path="src/DirectionalSolution.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="src/DynamicGame.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="src/EikonalSolution.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/FIM.h" ex="false" tool="3" flavor2="0">
@@ -111,6 +110,10 @@
       <item path="src/PontaniConway3dDynamics.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/SemiDirect.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/SeparableDynamicGame.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/SeparableDynamicGameBase.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/SurfNTerp.h" ex="false" tool="3" flavor2="0">
       </item>

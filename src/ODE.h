@@ -28,6 +28,7 @@ namespace WGL_DG {
             static const int UV = _UV;
             static const int PV = _PV;
             static const int XtUV = XV + 1 + UV;
+            static const int XtUPV = XV + 1 + UV + PV;
             
 
     };

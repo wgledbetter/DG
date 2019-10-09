@@ -2,12 +2,14 @@
 
 #include "pch.h"
 
+#include "CRTPBase.h"
+
 using namespace Eigen;
 
 namespace WGL_DG {
 
-    template<int _XV, int _UV, class PursuerDynamics, class EvaderDynamics>
-    struct SeparableDynamicGame {
+    template<class Derived, int _XV, int _UV, int _PV, class PursuerDynamics, class EvaderDynamics>
+    struct SeparableDynamicGameBase : CRTPBase<Derived> {
 
         public:
             /// Typedefs
@@ -37,21 +39,32 @@ namespace WGL_DG {
             /// Properties
             static const int XV = _XV;
             static const int UV = _UV;
+            static const int PV = _PV;
             static const int XtUV = _XV + 1 + _UV;
             static const int P_XV = Pursuer::XV;
             static const int P_UV = Pursuer::UV;
+            static const int P_PV = Pursuer::PV;
             static const int E_XV = Evader::XV;
             static const int E_UV = Evader::UV;
+            static const int E_PV = Evader::PV;
+            
+            Array<int, P_XV, 1> pInStateIdx, pOutStateIdx;
+            Array<int, P_UV, 1> pInControlIdx;
+            Array<int, P_XV+P_UV, 1> pInStateControlIdx;
+
+            Array<int, E_XV, 1> eInStateIdx, eOutStateIdx;
+            Array<int, E_UV, 1> eInControlIdx;
+            Array<int, E_XV+E_UV, 1> eInStateControlIdx;
 
 
         //======================================================================
             /// Constructors
-            SeparableDynamicGame(Pursuer* p_set, Evader* e_set){
+            SeparableDynamicGameBase(Pursuer* p_set, Evader* e_set){
                 set_pursuer(p_set);
                 set_evader(e_set);
             }
 
-            SeparableDynamicGame(){
+            SeparableDynamicGameBase(){
                 p = NULL;
                 e = NULL;
             }
@@ -74,21 +87,21 @@ namespace WGL_DG {
             inline void gen_evader(){
                 e = new Evader;
             }
-
+            
         //______________________________________________________________________
-
-            inline void set_pursuer_state_input(const Array<int, Pursuer::XV, 1> purVar){
+            
+            inline void set_pursuer_state_input(const Array<int, P_XV, 1> purVar){
                 // Which part of the full state affects the pursuer's dynamics?
                 pInStateIdx = purVar;
                 pInStateControlIdx.template head<P_XV>() = purVar;
             }
 
-            inline void set_pursuer_state_output(const Array<int, Pursuer::XV, 1> purVar){
+            inline void set_pursuer_state_output(const Array<int, P_XV, 1> purVar){
                 // Which state variables is the pursuer affecting?
                 pOutStateIdx = purVar;
             }
 
-            inline void set_pursuer_control_input(Array<int, Pursuer::UV, 1> purCon){
+            inline void set_pursuer_control_input(Array<int, P_UV, 1> purCon){
                 // What part of the control vector is for the pursuer?
                 pInControlIdx = purCon;
                 pInStateControlIdx.template tail<P_UV>() = purCon + XV;
@@ -96,53 +109,21 @@ namespace WGL_DG {
 
         //______________________________________________________________________
 
-            inline void set_evader_state_input(const Array<int, Evader::XV, 1> evaVar){
+            inline void set_evader_state_input(const Array<int, E_XV, 1> evaVar){
                 // Which part of the full state affects the evader's dynamics?
                 eInStateIdx = evaVar;
                 eInStateControlIdx.template head<E_XV>() = evaVar;
             }
 
-            inline void set_evader_state_output(const Array<int, Evader::XV, 1> evaVar){
+            inline void set_evader_state_output(const Array<int, E_XV, 1> evaVar){
                 // Which state variables is the evader affecting?
                 eOutStateIdx = evaVar;
             }
 
-            inline void set_evader_control_input(const Array<int, Evader::UV, 1> evaCon){
+            inline void set_evader_control_input(const Array<int, E_UV, 1> evaCon){
                 // What part of the control vector is for the evader?
                 eInControlIdx = evaCon;
                 eInStateControlIdx.template tail<E_UV>() = evaCon + XV;
-            }
-
-        //______________________________________________________________________
-
-            inline void assume_full_default_coupling(){
-                if( (P_XV == XV) && (E_XV == XV) ){
-                    const Array<int, XV, 1> fullVars = Array<int, XV, 1>::LinSpaced(XV, 0, XV-1);
-                    set_pursuer_state_input(fullVars);
-                    set_pursuer_state_input(fullVars);
-                    set_evader_state_input(fullVars);
-                    set_evader_state_input(fullVars);
-                }else{
-                    // BAD
-                }
-            }
-
-            inline void assume_decoupled(){
-                if( P_XV + E_XV == XV ){
-                    const Array<int, P_XV, 1> purVar = Array<int, P_XV, 1>::LinSpaced(P_XV, 0, P_XV-1);
-                    set_pursuer_state_input(purVar);
-                    set_pursuer_state_input(purVar);
-                    const Array<int, P_UV, 1> purCon = Array<int, P_UV, 1>::LinSpaced(P_UV, 0, P_UV-1);
-                    set_pursuer_control_input(purCon);
-
-                    const Array<int, E_XV, 1> evaVar = Array<int, E_XV, 1>::LinSpaced(E_XV, P_XV, P_XV+E_XV-1);
-                    set_evader_state_input(evaVar);
-                    set_evader_state_output(evaVar);
-                    const Array<int, E_UV, 1> evaCon = Array<int, E_UV, 1>::LinSpaced(E_UV, P_UV, P_UV+E_UV-1);
-                    set_evader_control_input(evaCon);
-                }else{
-                    // BAD
-                }
             }
 
 
@@ -167,6 +148,7 @@ namespace WGL_DG {
                 e->compute(xE, fxE);
 
                 process_output_state(fxP, fxE, fx);
+
             }
 
         //______________________________________________________________________
@@ -190,6 +172,7 @@ namespace WGL_DG {
                 e->jacobian(xE, jE);
 
                 process_output_jacobian(jP, jE, jx);
+
             }
 
             template<class InType, class OutType, class JacType>
@@ -217,6 +200,7 @@ namespace WGL_DG {
 
                 process_output_state(fxP, fxE, fx);
                 process_output_jacobian(jP, jE, jx);
+
             }
 
         //______________________________________________________________________
@@ -226,7 +210,7 @@ namespace WGL_DG {
                 using Scalar = typename AdjGradType::Scalar;
 
                 Matrix<Scalar, XV, XV+UV> jac;
-                jacobian(x, jac);
+                this->jacobian(x, jac);
 
                 MatrixBase<AdjGradType> & adjgrad = adjgrad_.const_cast_derived();
                 adjgrad = jac*adjvars;
@@ -240,7 +224,7 @@ namespace WGL_DG {
                 using Scalar = typename AdjGradType::Scalar;
 
                 Matrix<Scalar, XV, XV+UV> jac;
-                jacobian(x, jac);
+                this->jacobian(x, jac);
 
                 MatrixBase<AdjGradType> & adjgrad = adjgrad_.const_cast_derived();
                 adjgrad = jac.transpose()*adjvars;
@@ -248,6 +232,79 @@ namespace WGL_DG {
             }
 
 
+        //======================================================================
+            /// Secondary Methods
+            template<class InType, class AdjVarType, class OutType>
+            inline void pursuer_max_adjointtransposegradient_control(const MatrixBase<InType> & x, const MatrixBase<AdjVarType> & adj, MatrixBase<OutType> const & u_) const {
+
+                using Scalar = typename InType::Scalar;
+
+                PxuVector<Scalar> xP;
+                ExuVector<Scalar> xE;
+
+                process_input_state(x, xP, xE);
+                
+                auto adjP = adj(this->derived().pCostateIdx);
+                Matrix<typename OutType::Scalar, P_UV, 1> uP;
+                
+                p->max_adjointtransposegradient_control(xP, adjP, u_);
+
+            }
+            
+            template<class InType, class AdjVarType, class OutType>
+            inline void pursuer_min_adjointtransposegradient_control(const MatrixBase<InType> & x, const MatrixBase<AdjVarType> & adj, MatrixBase<OutType> const & u_) const {
+
+                using Scalar = typename InType::Scalar;
+
+                PxuVector<Scalar> xP;
+                ExuVector<Scalar> xE;
+
+                process_input_state(x, xP, xE);
+
+                auto adjP = adj(this->derived().pCostateIdx);
+                Matrix<typename OutType::Scalar, P_UV, 1> uP;
+
+                p->min_adjointtransposegradient_control(xP, adjP, u_);
+
+            }
+            
+        //______________________________________________________________________
+            
+            template<class InType, class AdjVarType, class OutType>
+            inline void evader_max_adjointtransposegradient_control(const MatrixBase<InType> & x, const MatrixBase<AdjVarType> & adj, MatrixBase<OutType> const & u_) const {
+
+                using Scalar = typename InType::Scalar;
+
+                PxuVector<Scalar> xP;
+                ExuVector<Scalar> xE;
+
+                process_input_state(x, xP, xE);
+
+                auto adjE = adj(this->derived().eCostateIdx);
+                Matrix<typename OutType::Scalar, E_UV, 1> uE;
+
+                e->max_adjointtransposegradient_control(xE, adjE, u_);
+
+            }
+            
+            template<class InType, class AdjVarType, class OutType>
+            inline void evader_min_adjointtransposegradient_control(const MatrixBase<InType> & x, const MatrixBase<AdjVarType> & adj, MatrixBase<OutType> const & u_) const {
+
+                using Scalar = typename InType::Scalar;
+
+                PxuVector<Scalar> xP;
+                ExuVector<Scalar> xE;
+
+                process_input_state(x, xP, xE);
+
+                auto adjE = adj(this->derived().eCostateIdx);
+                Matrix<typename OutType::Scalar, E_UV, 1> uE;
+
+                e->min_adjointtransposegradient_control(xE, adjE, u_);
+
+            }
+            
+            
         //======================================================================
             /// Access
             Pursuer* pointer_to_pursuer() const {
@@ -257,6 +314,8 @@ namespace WGL_DG {
             Evader* pointer_to_evader() const {
                 return e;
             }
+            
+        //______________________________________________________________________
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -267,6 +326,7 @@ namespace WGL_DG {
                 MatrixBase<POutType> & px = px_.const_cast_derived();
                 MatrixBase<EOutType> & ex = ex_.const_cast_derived();
 
+                // This type of array-indexing requires Eigen>3.3
                 px = x(pInStateControlIdx);
                 ex = x(eInStateControlIdx);
             }
@@ -277,6 +337,7 @@ namespace WGL_DG {
                 MatrixBase<OutType> x = x_.const_cast_derived();
 
                 x.fill(0);
+                // This type of array-indexing requires Eigen>3.3
                 x(pOutStateIdx) = px;
                 x(eOutStateIdx) += ex;
             }
@@ -287,9 +348,16 @@ namespace WGL_DG {
                 MatrixBase<JacType> jx = jx_.const_cast_derived();
 
                 jx.fill(0);
+                // This type of array-indexing requires Eigen>3.3
                 jx(pOutStateIdx, pInStateControlIdx) = pj;
                 jx(eOutStateIdx, eInStateControlIdx) += ej;
             }
+            
+            
+        //======================================================================
+            /// Properties
+            Pursuer* p;
+            Evader* e;
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -298,15 +366,6 @@ namespace WGL_DG {
 
         //======================================================================
             /// Properties
-            Pursuer* p;
-            Evader* e;
-
-            Array<int, P_XV, 1> pInStateIdx, pOutStateIdx;
-            Array<int, P_UV, 1> pInControlIdx;
-            Array<int, P_XV+P_UV, 1> pInStateControlIdx;
-            Array<int, E_XV, 1> eInStateIdx, eOutStateIdx;
-            Array<int, E_UV, 1> eInControlIdx;
-            Array<int, E_XV+E_UV, 1> eInStateControlIdx;
 
     };
 
