@@ -150,7 +150,7 @@ namespace WGL_DG {
 
         //______________________________________________________________________
             template<class InType, class AdjVarType, class AdjGradType>
-            inline void adjointgradient(const MatrixBase<InType> & x, const MatrixBase<AdjVarType> & adj, MatrixBase<AdjGradType> const & adjgrad_) const {
+            inline void adjointgradient(const MatrixBase<InType> & x, MatrixBase<AdjGradType> const & adjgrad_, const MatrixBase<AdjVarType> & adj) const {
 
                 using Scalar = typename InType::Scalar;
 
@@ -168,7 +168,7 @@ namespace WGL_DG {
             }
 
             template<class InType, class AdjVarType, class AdjGradType>
-            inline void adjointtransposegradient(const MatrixBase<InType> & x, const MatrixBase<AdjVarType> & adj, MatrixBase<AdjGradType> const & adjgrad_) const {
+            inline void adjointtransposegradient(const MatrixBase<InType> & x, MatrixBase<AdjGradType> const & adjgrad_, const MatrixBase<AdjVarType> & adj) const {
 
                 using Scalar = typename InType::Scalar;
                 using std::cos;

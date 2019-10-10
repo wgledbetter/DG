@@ -15,9 +15,9 @@ namespace WGL_DG {
     };
 
     /// Template
-    template<int _XV, int _UV, int _PV, class PursuerDynamics, class EvaderDynamics, int Coupling=Decoupled>
-    struct SeparableDynamicGame : SeparableDynamicGameBase<SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics, Coupling>, _XV, _UV, _PV, PursuerDynamics, EvaderDynamics>,
-                                  ODE<SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics>, _XV, _UV, _PV> {
+    template<int _XV, int _PV, class PursuerDynamics, class EvaderDynamics, int Coupling=Decoupled>
+    struct SeparableDynamicGame : SeparableDynamicGameBase<SeparableDynamicGame<_XV, _PV, PursuerDynamics, EvaderDynamics, Coupling>, _XV, _PV, PursuerDynamics, EvaderDynamics>,
+                                  ODE<SeparableDynamicGame<_XV, _PV, PursuerDynamics, EvaderDynamics, Coupling>, _XV, (PursuerDynamics::UV + EvaderDynamics::UV), _PV> {
 
     };
 
@@ -25,15 +25,15 @@ namespace WGL_DG {
     //// Specializations
 
     /// Decoupled
-    template<int _XV, int _UV, int _PV, class PursuerDynamics, class EvaderDynamics>
-    struct SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics, Decoupled> : 
-        SeparableDynamicGameBase<SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics, Decoupled>, _XV, _UV, _PV, PursuerDynamics, EvaderDynamics>,
-        ODE<SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics, Decoupled>, _XV, _UV, _PV> {
+    template<int _PV, class PursuerDynamics, class EvaderDynamics>
+    struct SeparableDynamicGame<(PursuerDynamics::XV + EvaderDynamics::XV), _PV, PursuerDynamics, EvaderDynamics, Decoupled> : 
+        SeparableDynamicGameBase<SeparableDynamicGame<(PursuerDynamics::XV + EvaderDynamics::XV), _PV, PursuerDynamics, EvaderDynamics, Decoupled>, (PursuerDynamics::XV + EvaderDynamics::XV), _PV, PursuerDynamics, EvaderDynamics>,
+        ODE<SeparableDynamicGame<(PursuerDynamics::XV + EvaderDynamics::XV), _PV, PursuerDynamics, EvaderDynamics, Decoupled>, (PursuerDynamics::XV + EvaderDynamics::XV), (PursuerDynamics::UV + EvaderDynamics::UV), _PV> {
 
         public:
             /// Typedefs
-            using Base = ODE<SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics>, _XV, _UV, _PV>;
-            using GameBase = SeparableDynamicGameBase<SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics, Decoupled>, _XV, _UV, _PV, PursuerDynamics, EvaderDynamics>;
+            using Base = ODE<SeparableDynamicGame<_PV, PursuerDynamics, EvaderDynamics, Decoupled>, (PursuerDynamics::XV + EvaderDynamics::XV), _PV>;
+            using GameBase = SeparableDynamicGameBase<SeparableDynamicGame<_PV, PursuerDynamics, EvaderDynamics, Decoupled>, (PursuerDynamics::XV + EvaderDynamics::XV), (PursuerDynamics::UV + EvaderDynamics::UV), _PV, PursuerDynamics, EvaderDynamics>;
 
             using GameBase::XV;
             using GameBase::UV;
@@ -73,23 +73,19 @@ namespace WGL_DG {
         protected:
             /// Methods
             inline void constructorFunction(){
-                if( P_XV + E_XV == XV ){
-                    const Array<int, P_XV, 1> purVar = Array<int, P_XV, 1>::LinSpaced(P_XV, 0, P_XV-1);
-                    GameBase::set_pursuer_state_input(purVar);
-                    GameBase::set_pursuer_state_output(purVar);
-                    const Array<int, P_UV, 1> purCon = Array<int, P_UV, 1>::LinSpaced(P_UV, 0, P_UV-1);
-                    GameBase::set_pursuer_control_input(purCon);
-                    pCostateIdx = purVar;
+                const Array<int, P_XV, 1> purVar = Array<int, P_XV, 1>::LinSpaced(P_XV, 0, P_XV-1);
+                GameBase::set_pursuer_state_input(purVar);
+                GameBase::set_pursuer_state_output(purVar);
+                const Array<int, P_UV, 1> purCon = Array<int, P_UV, 1>::LinSpaced(P_UV, 0, P_UV-1);
+                GameBase::set_pursuer_control_input(purCon);
+                pCostateIdx = purVar;
 
-                    const Array<int, E_XV, 1> evaVar = Array<int, E_XV, 1>::LinSpaced(E_XV, P_XV, P_XV+E_XV-1);
-                    GameBase::set_evader_state_input(evaVar);
-                    GameBase::set_evader_state_output(evaVar);
-                    const Array<int, E_UV, 1> evaCon = Array<int, E_UV, 1>::LinSpaced(E_UV, P_UV, P_UV+E_UV-1);
-                    GameBase::set_evader_control_input(evaCon);
-                    eCostateIdx = evaVar;
-                }else{
-                    // BAD
-                }
+                const Array<int, E_XV, 1> evaVar = Array<int, E_XV, 1>::LinSpaced(E_XV, P_XV, P_XV+E_XV-1);
+                GameBase::set_evader_state_input(evaVar);
+                GameBase::set_evader_state_output(evaVar);
+                const Array<int, E_UV, 1> evaCon = Array<int, E_UV, 1>::LinSpaced(E_UV, P_UV, P_UV+E_UV-1);
+                GameBase::set_evader_control_input(evaCon);
+                eCostateIdx = evaVar;
             }
 
 
@@ -109,14 +105,14 @@ namespace WGL_DG {
 //******************************************************************************
 //******************************************************************************
     /// Fully Coupled
-    template<int _XV, int _UV, int _PV, class PursuerDynamics, class EvaderDynamics>
-    struct SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics, FullyCoupled> : 
+    template<int _PV, class PursuerDynamics, class EvaderDynamics>
+    struct SeparableDynamicGame<PursuerDynamics::XV, (PursuerDynamics::UV + EvaderDynamics::UV), _PV, PursuerDynamics, EvaderDynamics, FullyCoupled> : 
         SeparableDynamicGameBase<SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics, FullyCoupled>, _XV, _UV, _PV, PursuerDynamics, EvaderDynamics>,
         ODE<SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics, FullyCoupled>, _XV, _UV, _PV> {
 
         public:
             /// Typedefs
-            using Base = ODE<SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics>, _XV, _UV, _PV>;
+            using Base = ODE<SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics, FullyCoupled>, _XV, _UV, _PV>;
             using GameBase = SeparableDynamicGameBase<SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics, FullyCoupled>, _XV, _UV, _PV, PursuerDynamics, EvaderDynamics>;
 
             using GameBase::XV;
@@ -189,7 +185,7 @@ namespace WGL_DG {
 
         public:
             /// Typedefs
-            using Base = ODE<SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics>, _XV, _UV, _PV>;
+            using Base = ODE<SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics, PartiallyCoupled>, _XV, _UV, _PV>;
             using GameBase = SeparableDynamicGameBase<SeparableDynamicGame<_XV, _UV, _PV, PursuerDynamics, EvaderDynamics, PartiallyCoupled>, _XV, _UV, _PV, PursuerDynamics, EvaderDynamics>;
 
             using GameBase::XV;

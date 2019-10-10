@@ -8,7 +8,7 @@ using namespace Eigen;
 
 namespace WGL_DG {
 
-    template<class Derived, int _XV, int _UV, int _PV, class PursuerDynamics, class EvaderDynamics>
+    template<class Derived, int _XV, int _PV, class PursuerDynamics, class EvaderDynamics>
     struct SeparableDynamicGameBase : CRTPBase<Derived> {
 
         public:
@@ -38,16 +38,16 @@ namespace WGL_DG {
         //======================================================================
             /// Properties
             static const int XV = _XV;
-            static const int UV = _UV;
+            static const int UV = Pursuer::UV + Evader::UV;
             static const int PV = _PV;
-            static const int XtUV = _XV + 1 + _UV;
+            static const int XtUV = _XV + 1 + UV;
             static const int P_XV = Pursuer::XV;
             static const int P_UV = Pursuer::UV;
             static const int P_PV = Pursuer::PV;
             static const int E_XV = Evader::XV;
             static const int E_UV = Evader::UV;
             static const int E_PV = Evader::PV;
-            
+
             Array<int, P_XV, 1> pInStateIdx, pOutStateIdx;
             Array<int, P_UV, 1> pInControlIdx;
             Array<int, P_XV+P_UV, 1> pInStateControlIdx;

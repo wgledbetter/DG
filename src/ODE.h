@@ -9,7 +9,7 @@ using namespace Eigen;
 namespace WGL_DG {
     
     template<class Derived, int _XV, int _UV, int _PV>
-    struct ODE : VectorFunction<Derived, _XV+1+_UV+_PV, _XV> {
+    struct ODE : VectorFunction<Derived, (_XV+1+_UV+_PV), _XV> {
 
         public:
             /// Typedefs

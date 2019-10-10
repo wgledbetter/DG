@@ -77,6 +77,25 @@ int main() {
     bool breakp;
     
     if(1){
+        PontaniConway3dDynamics pc3d_1, pc3d_2;
+        pc3d_1.set_mass(10);
+        pc3d_1.set_mu(9.81);
+        pc3d_1.set_thrust(0.001);
+        pc3d_2.set_mass(20);
+        pc3d_2.set_mu(9.81);
+        pc3d_2.set_thrust(0.0015);
+        
+        PontaniConway3dDynamics::InputVec<double> x;
+        x = PontaniConway3dDynamics::InputVec<double>::Random();
+        
+        cout << PontaniConway3dDynamics::UV << endl;
+        
+        cout << SeparableDynamicGame<12, 4, 0, PontaniConway3dDynamics, PontaniConway3dDynamics, Decoupled>::GameBase::P_XV << endl;
+        SeparableDynamicGame<12, 4, 0, PontaniConway3dDynamics, PontaniConway3dDynamics, Decoupled> DG;
+        
+    }
+    
+    if(0){
         vector<MyConcept> vec;
         MyStruct1<3> ms13;
         MyStruct1<7> ms17;
@@ -100,6 +119,9 @@ int main() {
         pc3d_2.set_mu(9.81);
         pc3d_2.set_thrust(0.0015);
         
+        vf_vec.push_back(pc3d_1);
+        vf_vec.push_back(pc3d_2);
+        
         PontaniConway3dDynamics::InputVec<double> x;
         x = PontaniConway3dDynamics::InputVec<double>::Random();
         Matrix<double, 8, 1> fx;
@@ -114,7 +136,7 @@ int main() {
         cout << "Before Calculation fx:" << endl << fx << endl;
         Matrix<double, 6, 1> tempVec = fx(idx);
         cout << "Before Calculation tempVec:" << endl << tempVec << endl << endl;
-        pc3d_1.compute(x, tempVec);
+        vf_vec[1].compute(x, tempVec);
         cout << "After Calculation tempVec:" << endl << tempVec << endl;
         fx(idx) = tempVec;
         cout << "After Calculation fx:" << endl << fx << endl;
