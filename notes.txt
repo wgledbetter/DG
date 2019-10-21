@@ -55,3 +55,7 @@ Parameter indexing in DynamicGame
 10 Oct
 If the game is decoupled or fully coupled, we shouldn't allow user to pass in XV or UV because those are fixed.
 Also, make sure the U component is always size(E_UV+P_UV). This must be true for all separable systems.
+
+
+21 Oct
+rewrite 'process_input_state' to account for time variable

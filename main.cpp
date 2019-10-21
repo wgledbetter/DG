@@ -72,9 +72,19 @@ struct MySpec {
 using MyConcept = rubber_types::TypeErasure<MySpec>;
 
 
+
+template<class Scalar>
+using DgInVec = SeparableDynamicGame<0, PontaniConway3dDynamics, PontaniConway3dDynamics, Decoupled>::InputVec<Scalar>;
+template<class Scalar>
+using DgOutVec = SeparableDynamicGame<0, PontaniConway3dDynamics, PontaniConway3dDynamics, Decoupled>::OutputVec<Scalar>;
+
+
+
 int main() {
     
     bool breakp;
+    
+    
     
     if(1){
         PontaniConway3dDynamics pc3d_1, pc3d_2;
@@ -90,9 +100,14 @@ int main() {
         
         cout << PontaniConway3dDynamics::UV << endl;
         
-        cout << SeparableDynamicGame<12, 4, 0, PontaniConway3dDynamics, PontaniConway3dDynamics, Decoupled>::GameBase::P_XV << endl;
-        SeparableDynamicGame<12, 4, 0, PontaniConway3dDynamics, PontaniConway3dDynamics, Decoupled> DG;
+        cout << SeparableDynamicGame<0, PontaniConway3dDynamics, PontaniConway3dDynamics, Decoupled>::GameBase::P_XV << endl;
+        SeparableDynamicGame<0, PontaniConway3dDynamics, PontaniConway3dDynamics, Decoupled> DG;
         
+        DgInVec<double> dgIn = DgInVec<double>::Random();
+        DgOutVec<double> dgOut;
+        
+        DG.compute(dgIn,dgOut);
+
     }
     
     if(0){
@@ -145,7 +160,7 @@ int main() {
     if(0){
         
         PontaniConway3dDynamics testPursuer, testEvader;
-        SeparableDynamicGame<12, 4, 0, PontaniConway3dDynamics, PontaniConway3dDynamics> DG;
+        SeparableDynamicGame<0, PontaniConway3dDynamics, PontaniConway3dDynamics> DG;
         
         DG.gen_pursuer();
         DG.gen_evader();

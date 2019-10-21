@@ -2,6 +2,7 @@
 
 #include "pch.h"
 
+#include "ODE.h"
 #include "CRTPBase.h"
 
 using namespace Eigen;
@@ -9,7 +10,7 @@ using namespace Eigen;
 namespace WGL_DG {
 
     template<class Derived, int _XV, int _PV, class PursuerDynamics, class EvaderDynamics>
-    struct SeparableDynamicGameBase : CRTPBase<Derived> {
+    struct SeparableDynamicGameBase : ODE<Derived, _XV, PursuerDynamics::UV + EvaderDynamics::UV, _PV> {
 
         public:
             /// Typedefs
@@ -40,7 +41,7 @@ namespace WGL_DG {
             static const int XV = _XV;
             static const int UV = Pursuer::UV + Evader::UV;
             static const int PV = _PV;
-            static const int XtUV = _XV + 1 + UV;
+            static const int XtUV = XV + 1 + UV;
             static const int P_XV = Pursuer::XV;
             static const int P_UV = Pursuer::UV;
             static const int P_PV = Pursuer::PV;
@@ -104,7 +105,7 @@ namespace WGL_DG {
             inline void set_pursuer_control_input(Array<int, P_UV, 1> purCon){
                 // What part of the control vector is for the pursuer?
                 pInControlIdx = purCon;
-                pInStateControlIdx.template tail<P_UV>() = purCon + XV;
+                pInStateControlIdx.template tail<P_UV>() = purCon + P_XV;
             }
 
         //______________________________________________________________________
@@ -123,7 +124,7 @@ namespace WGL_DG {
             inline void set_evader_control_input(const Array<int, E_UV, 1> evaCon){
                 // What part of the control vector is for the evader?
                 eInControlIdx = evaCon;
-                eInStateControlIdx.template tail<E_UV>() = evaCon + XV;
+                eInStateControlIdx.template tail<E_UV>() = evaCon + E_XV;
             }
 
 

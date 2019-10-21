@@ -7,7 +7,7 @@
 using namespace Eigen;
 
 namespace WGL_DG {
-    
+
     template<class Derived, int _XV, int _UV, int _PV>
     struct ODE : VectorFunction<Derived, (_XV+1+_UV+_PV), _XV> {
 
@@ -18,7 +18,7 @@ namespace WGL_DG {
         //======================================================================
             /// Constructors
             ODE(){
-                
+
             }
 
 
@@ -29,7 +29,7 @@ namespace WGL_DG {
             static const int PV = _PV;
             static const int XtUV = XV + 1 + UV;
             static const int XtUPV = XV + 1 + UV + PV;
-            
+
 
     };
 
