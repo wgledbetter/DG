@@ -218,32 +218,48 @@ namespace WGL_DG {
 
                 using Scalar = typename InType::Scalar;
                 using OScalar = typename OutType::Scalar;
+                using AScalar = typename AdjVarType::Scalar;
                 using UVec = Matrix<OScalar, 2, 1>;
+                using HVec = Matrix<OScalar, 3, 1>;
                 using std::cos;
                 using std::sin;
                 using std::atan;
-                
+
                 Scalar x2, x3;
                 x2 = x[1];
                 x3 = x[2];
-                
-                typename AdjVarType::Scalar l2, l3, l6;
+
+                AScalar l2, l3, l6;
                 l2 = adj[1];
                 l3 = adj[2];
                 l6 = adj[5];
 
                 MatrixBase<OutType> & u = u_.const_cast_derived();
 
-                std::vector<UVec> uOpts = ext_adjTransGrad_subroutine(x, adj);
+                std::vector<UVec> uOpts;
+                std::vector<HVec> hOpts;
+                ext_adjTransGrad_subroutine<InType, AdjVarType, OScalar>(x, adj, uOpts, hOpts);
 
                 // Use 2nd adjoint derivative to find min or max solution
                 u = UVec::Zero();
+                OScalar H11, H12, H22;
                 for(int i=0; i<4; i++){
-                    OScalar H11, H12, H22;
-                    H11 = -T*cos(uOpts[i][1])*(x2*l2*cos(uOpts[i][0]) + l3*sin(uOpts[i][0]))/(m*x2);
-                    H12 = T*sin(uOpts[i][1])*(x2*l2*sin(uOpts[i][0]) - l3*cos(uOpts[i][0]))/(m*x2);
-                    H22 = -T*((l3*sin(uOpts[i][0])*cos(uOpts[i][1]) + l6*sin(uOpts[i][1])/cos(x3))/x2 + l2*cos(uOpts[i][0])*cos(uOpts[i][1]))/m;
-                    if( (H11 + H22 <= 0) && (H11*H22 - H12*H12 <=0) ){  // Second-order maximum condition
+                    H11 = hOpts[i][0];
+                    H12 = hOpts[i][1];
+                    H22 = hOpts[i][2];
+                    if( (H11 + H22 <= 0) && (H11*H22 - H12*H12 <= 0) ){  // Second-order maximum condition
+                        u = uOpts[i];
+                        return;
+                    }
+                }
+
+                // Shouldn't end up here...
+                double tol = 1e-3;
+                for(int i=0; i<4; i++){
+                    H11 = hOpts[i][0];
+                    H12 = hOpts[i][1];
+                    H22 = hOpts[i][2];
+                    if( (H11 + H22 <= tol) && (H11*H22 - H12*H12 <= tol) ){  // Second-order maximum condition
                         u = uOpts[i];
                         return;
                     }
@@ -256,10 +272,11 @@ namespace WGL_DG {
                 using Scalar = typename InType::Scalar;
                 using OScalar = typename OutType::Scalar;
                 using UVec = Matrix<OScalar, 2, 1>;
+                using HVec = Matrix<OScalar, 3, 1>;
                 using std::cos;
                 using std::sin;
                 using std::atan;
-                
+
                 Scalar x2, x3;
                 x2 = x[1];
                 x3 = x[2];
@@ -271,16 +288,30 @@ namespace WGL_DG {
 
                 MatrixBase<OutType> & u = u_.const_cast_derived();
 
-                std::vector<UVec> uOpts = ext_adjTransGrad_subroutine(x, adj);
+                std::vector<UVec> uOpts;
+                std::vector<HVec> hOpts;
+                ext_adjTransGrad_subroutine<InType, AdjVarType, OScalar>(x, adj, uOpts, hOpts);
 
                 // Use 2nd adjoint derivative to find min or max solution
                 u = UVec::Zero();
+                OScalar H11, H12, H22;
                 for(int i=0; i<4; i++){
-                    OScalar H11, H12, H22;
-                    H11 = -T*cos(uOpts[i][1])*(x2*l2*cos(uOpts[i][0]) + l3*sin(uOpts[i][0]))/(m*x2);
-                    H12 = T*sin(uOpts[i][1])*(x2*l2*sin(uOpts[i][0]) - l3*cos(uOpts[i][0]))/(m*x2);
-                    H22 = -T*((l3*sin(uOpts[i][0])*cos(uOpts[i][1]) + l6*sin(uOpts[i][1])/cos(x3))/x2 + l2*cos(uOpts[i][0])*cos(uOpts[i][1]))/m;
-                    if( (H11 + H22 >= 0) && (H11*H22 - H12*H12 >=0) ){  // Second-order minimum condition
+                    H11 = hOpts[i][0];
+                    H12 = hOpts[i][1];
+                    H22 = hOpts[i][2];
+                    if( (H11 + H22 >= 0) && (H11*H22 - H12*H12 >= 0) ){  // Second-order minimum condition
+                        u = uOpts[i];
+                        return;
+                    }
+                }
+
+                // Shouldn't end up here...
+                double tol = 1e-3;
+                for(int i=0; i<4; i++){
+                    H11 = hOpts[i][0];
+                    H12 = hOpts[i][1];
+                    H22 = hOpts[i][2];
+                    if( (H11 + H22 >= tol) && (H11*H22 - H12*H12 >= tol) ){  // Second-order minimum condition
                         u = uOpts[i];
                         return;
                     }
@@ -292,10 +323,9 @@ namespace WGL_DG {
     ////////////////////////////////////////////////////////////////////////////
         protected:
             /// Methods
-            template<class InType, class AdjVarType, class OutType>
-            inline std::vector<Matrix<typename OutType::Scalar, 2, 1> > ext_adjTransGrad_subroutine(const MatrixBase<InType> & x, const MatrixBase<AdjVarType> & adj) const {
+            template<class InType, class AdjVarType, class OScalar>
+            inline void ext_adjTransGrad_subroutine(const MatrixBase<InType> & x, const MatrixBase<AdjVarType> & adj, std::vector<Matrix<OScalar, 2, 1> > & uOpts, std::vector<Matrix<OScalar, 3, 1> > & hOpts) const {
                 using Scalar = typename InType::Scalar;
-                using OScalar = typename OutType::Scalar;
                 using UVec = Matrix<OScalar, 2, 1>;
                 using std::cos;
                 using std::sin;
@@ -327,7 +357,6 @@ namespace WGL_DG {
                 u2ba = atan((l6 - l3*cos(x3)*sin(u1b))/(x2*l2*cos(x3)*cos(u1b)));
                 u2bb = u2ba + M_PI;
 
-                std::vector<UVec> uOpts;
                 uOpts.resize(4);
                 uOpts[0][0] = u1a;
                 uOpts[0][1] = u2aa;
@@ -338,7 +367,16 @@ namespace WGL_DG {
                 uOpts[3][0] = u1b;
                 uOpts[3][1] = u2bb;
 
-                return uOpts;
+                hOpts.resize(4);
+                for(int i=0; i<4; i++){
+                    OScalar H11, H12, H22;
+                    H11 = -T*cos(uOpts[i][1])*(x2*l2*cos(uOpts[i][0]) + l3*sin(uOpts[i][0]))/(m*x2);
+                    H12 = T*sin(uOpts[i][1])*(x2*l2*sin(uOpts[i][0]) - l3*cos(uOpts[i][0]))/(m*x2);
+                    H22 = -T*((l3*sin(uOpts[i][0])*cos(uOpts[i][1]) + l6*sin(uOpts[i][1])/cos(x3))/x2 + l2*cos(uOpts[i][0])*cos(uOpts[i][1]))/m;
+                    hOpts[i][0] = H11;
+                    hOpts[i][1] = H12;
+                    hOpts[i][2] = H22;
+                }
             }
 
 

@@ -59,3 +59,12 @@ Also, make sure the U component is always size(E_UV+P_UV). This must be true for
 
 21 Oct
 rewrite 'process_input_state' to account for time variable
+
+
+28 Oct
+SemiDirect:75 - can't just pass 'costate' to 'adjointtransposegradient.'
+Need to check dimension or fill the appropriate costate spots in a larger vector, like: [0 0 0 costate 0]
+
+
+29 Oct
+SegFault SepDynGamBas:237 matmul

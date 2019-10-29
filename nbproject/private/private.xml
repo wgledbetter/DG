@@ -11,10 +11,11 @@
             <file>file:/home/wgledbetter/pCloud_ResearchCodeProjects/DG/src/SeparableDynamicGameBase.h</file>
             <file>file:/home/wgledbetter/pCloud_ResearchCodeProjects/DG/src/CRTPBase.h</file>
             <file>file:/home/wgledbetter/pCloud_ResearchCodeProjects/DG/src/PontaniConway3dDynamics.h</file>
-            <file>file:/home/wgledbetter/pCloud_ResearchCodeProjects/DG/main.cpp</file>
             <file>file:/home/wgledbetter/pCloud_ResearchCodeProjects/DG/src/ODE.h</file>
+            <file>file:/home/wgledbetter/pCloud_ResearchCodeProjects/DG/main.cpp</file>
             <file>file:/home/wgledbetter/pCloud_ResearchCodeProjects/DG/src/VectorFunction.h</file>
             <file>file:/home/wgledbetter/pCloud_ResearchCodeProjects/DG/src/NLP.h</file>
+            <file>file:/home/wgledbetter/pCloud_ResearchCodeProjects/DG/src/SemiDirect.h</file>
         </group>
     </open-files>
 </project-private>

@@ -24,6 +24,8 @@ namespace WGL_DG {
             template<class Scalar>
             using PxuVector = Matrix<Scalar, Pursuer::XV+Pursuer::UV, 1>;
             template<class Scalar>
+            using PxtuVector = Matrix<Scalar, Pursuer::XV+1+Pursuer::UV, 1>;
+            template<class Scalar>
             using PJacMatrix = Matrix<Scalar, Pursuer::XV, Pursuer::XV+Pursuer::UV>;
 
             template<class Scalar>
@@ -32,6 +34,8 @@ namespace WGL_DG {
             using EuVector = Matrix<Scalar, Evader::UV, 1>;
             template<class Scalar>
             using ExuVector = Matrix<Scalar, Evader::XV+Evader::UV, 1>;
+            template<class Scalar>
+            using ExtuVector = Matrix<Scalar, Evader::XV+1+Evader::UV, 1>;
             template<class Scalar>
             using EJacMatrix = Matrix<Scalar, Evader::XV, Evader::XV+Evader::UV>;
 
@@ -73,7 +77,7 @@ namespace WGL_DG {
 
         //======================================================================
             /// Setup
-            inline void set_pursuer(const Pursuer* p_set){
+            inline void set_pursuer(Pursuer* p_set){
                 p = p_set;
             }
 
@@ -81,16 +85,16 @@ namespace WGL_DG {
                 p = new Pursuer;
             }
 
-            inline void set_evader(const Evader* e_set){
+            inline void set_evader(Evader* e_set){
                 e = e_set;
             }
 
             inline void gen_evader(){
                 e = new Evader;
             }
-            
+
         //______________________________________________________________________
-            
+
             inline void set_pursuer_state_input(const Array<int, P_XV, 1> purVar){
                 // Which part of the full state affects the pursuer's dynamics?
                 pInStateIdx = purVar;
@@ -103,9 +107,10 @@ namespace WGL_DG {
             }
 
             inline void set_pursuer_control_input(Array<int, P_UV, 1> purCon){
+                int xv = XV;
                 // What part of the control vector is for the pursuer?
                 pInControlIdx = purCon;
-                pInStateControlIdx.template tail<P_UV>() = purCon + P_XV;
+                pInStateControlIdx.template tail<P_UV>() = purCon + xv+1;
             }
 
         //______________________________________________________________________
@@ -122,9 +127,10 @@ namespace WGL_DG {
             }
 
             inline void set_evader_control_input(const Array<int, E_UV, 1> evaCon){
+                int xv = XV;
                 // What part of the control vector is for the evader?
                 eInControlIdx = evaCon;
-                eInStateControlIdx.template tail<E_UV>() = evaCon + E_XV;
+                eInStateControlIdx.template tail<E_UV>() = evaCon + xv+1;
             }
 
 
@@ -136,9 +142,9 @@ namespace WGL_DG {
                 using Scalar = typename InType::Scalar;
 
                 MatrixBase<OutType> & fx = fx_.const_cast_derived();
-
-                PxuVector<Scalar> xP;
-                ExuVector<Scalar> xE;
+                
+                PxtuVector<Scalar> xP;
+                ExtuVector<Scalar> xE;
 
                 process_input_state(x, xP, xE);
 
@@ -148,7 +154,7 @@ namespace WGL_DG {
                 p->compute(xP, fxP);
                 e->compute(xE, fxE);
 
-                process_output_state(fxP, fxE, fx);
+                process_output_state(fxP, fxE, fx_);
 
             }
 
@@ -161,8 +167,8 @@ namespace WGL_DG {
 
                 MatrixBase<JacType> & jx = jx_.const_cast_derived();
 
-                PxuVector<Scalar> xP;
-                ExuVector<Scalar> xE;
+                PxtuVector<Scalar> xP;
+                ExtuVector<Scalar> xE;
 
                 process_input_state(x, xP, xE);
 
@@ -184,8 +190,8 @@ namespace WGL_DG {
                 MatrixBase<OutType> fx = fx_.const_cast_derived();
                 MatrixBase<JacType> jx = jx_.const_cast_derived();
 
-                PxuVector<Scalar> xP;
-                ExuVector<Scalar> xE;
+                PxtuVector<Scalar> xP;
+                ExtuVector<Scalar> xE;
 
                 process_input_state(x, xP, xE);
 
@@ -216,8 +222,9 @@ namespace WGL_DG {
                 MatrixBase<AdjGradType> & adjgrad = adjgrad_.const_cast_derived();
                 adjgrad = jac*adjvars;
 
+                std::exit(1);
             }
-            
+
         //______________________________________________________________________
             template<class InType, class AdjGradType, class AdjVarType>
             inline void adjointtransposegradient(const MatrixBase<InType> & x, MatrixBase<AdjGradType> const & adjgrad_, const MatrixBase<AdjVarType> & adjvars) const {
@@ -228,8 +235,9 @@ namespace WGL_DG {
                 this->jacobian(x, jac);
 
                 MatrixBase<AdjGradType> & adjgrad = adjgrad_.const_cast_derived();
-                adjgrad = jac.transpose()*adjvars;
+                adjgrad = (adjvars.transpose()*jac).transpose();
 
+                std::exit(1);
             }
 
 
@@ -239,73 +247,77 @@ namespace WGL_DG {
             inline void pursuer_max_adjointtransposegradient_control(const MatrixBase<InType> & x, const MatrixBase<AdjVarType> & adj, MatrixBase<OutType> const & u_) const {
 
                 using Scalar = typename InType::Scalar;
+                using AScalar = typename AdjVarType::Scalar;
 
-                PxuVector<Scalar> xP;
-                ExuVector<Scalar> xE;
+                PxtuVector<Scalar> xP;
+                ExtuVector<Scalar> xE;
 
                 process_input_state(x, xP, xE);
-                
-                auto adjP = adj(this->derived().pCostateIdx);
+
+                Matrix<AScalar, P_XV, 1> adjP = adj(pOutStateIdx);
                 Matrix<typename OutType::Scalar, P_UV, 1> uP;
-                
+
                 p->max_adjointtransposegradient_control(xP, adjP, u_);
 
             }
-            
+
             template<class InType, class AdjVarType, class OutType>
             inline void pursuer_min_adjointtransposegradient_control(const MatrixBase<InType> & x, const MatrixBase<AdjVarType> & adj, MatrixBase<OutType> const & u_) const {
 
                 using Scalar = typename InType::Scalar;
+                using AScalar = typename AdjVarType::Scalar;
 
-                PxuVector<Scalar> xP;
-                ExuVector<Scalar> xE;
+                PxtuVector<Scalar> xP;
+                ExtuVector<Scalar> xE;
 
                 process_input_state(x, xP, xE);
 
-                auto adjP = adj(this->derived().pCostateIdx);
+                Matrix<AScalar, P_XV, 1> adjP = adj(pOutStateIdx);
                 Matrix<typename OutType::Scalar, P_UV, 1> uP;
 
                 p->min_adjointtransposegradient_control(xP, adjP, u_);
 
             }
-            
+
         //______________________________________________________________________
-            
+
             template<class InType, class AdjVarType, class OutType>
             inline void evader_max_adjointtransposegradient_control(const MatrixBase<InType> & x, const MatrixBase<AdjVarType> & adj, MatrixBase<OutType> const & u_) const {
 
                 using Scalar = typename InType::Scalar;
+                using AScalar = typename AdjVarType::Scalar;
 
-                PxuVector<Scalar> xP;
-                ExuVector<Scalar> xE;
+                PxtuVector<Scalar> xP;
+                ExtuVector<Scalar> xE;
 
                 process_input_state(x, xP, xE);
 
-                auto adjE = adj(this->derived().eCostateIdx);
+                Matrix<AScalar, E_XV, 1> adjE = adj(eOutStateIdx);
                 Matrix<typename OutType::Scalar, E_UV, 1> uE;
 
                 e->max_adjointtransposegradient_control(xE, adjE, u_);
 
             }
-            
+
             template<class InType, class AdjVarType, class OutType>
             inline void evader_min_adjointtransposegradient_control(const MatrixBase<InType> & x, const MatrixBase<AdjVarType> & adj, MatrixBase<OutType> const & u_) const {
 
                 using Scalar = typename InType::Scalar;
+                using AScalar = typename AdjVarType::Scalar;
 
-                PxuVector<Scalar> xP;
-                ExuVector<Scalar> xE;
+                PxtuVector<Scalar> xP;
+                ExtuVector<Scalar> xE;
 
                 process_input_state(x, xP, xE);
 
-                auto adjE = adj(this->derived().eCostateIdx);
+                Matrix<AScalar, E_XV, 1> adjE = adj(eOutStateIdx);
                 Matrix<typename OutType::Scalar, E_UV, 1> uE;
 
                 e->min_adjointtransposegradient_control(xE, adjE, u_);
 
             }
-            
-            
+
+
         //======================================================================
             /// Access
             Pursuer* pointer_to_pursuer() const {
@@ -315,7 +327,7 @@ namespace WGL_DG {
             Evader* pointer_to_evader() const {
                 return e;
             }
-            
+
         //______________________________________________________________________
 
 
@@ -328,14 +340,24 @@ namespace WGL_DG {
                 MatrixBase<EOutType> & ex = ex_.const_cast_derived();
 
                 // This type of array-indexing requires Eigen>3.3
-                px = x(pInStateControlIdx);
-                ex = x(eInStateControlIdx);
+                // State
+                px.template head<P_XV>() = x(pInStateIdx);
+                ex.template head<E_XV>() = x(eInStateIdx);
+
+                // Time
+                px[P_XV] = x[XV];
+                ex[E_XV] = x[XV];
+
+                // Control
+                int xv = XV;
+                px.template tail<P_UV>() = x(pInControlIdx + xv+1);
+                ex.template tail<E_UV>() = x(eInControlIdx + xv+1);
             }
 
         //______________________________________________________________________
             template<class PInType, class EInType, class OutType>
             inline void process_output_state(const MatrixBase<PInType> & px, const MatrixBase<EInType> & ex, MatrixBase<OutType> const & x_) const {
-                MatrixBase<OutType> x = x_.const_cast_derived();
+                MatrixBase<OutType> & x = x_.const_cast_derived();
 
                 x.fill(0);
                 // This type of array-indexing requires Eigen>3.3
@@ -346,15 +368,15 @@ namespace WGL_DG {
         //______________________________________________________________________
             template<class PJacType, class EJacType, class JacType>
             inline void process_output_jacobian(const MatrixBase<PJacType> & pj, const MatrixBase<EJacType> & ej, MatrixBase<JacType> const & jx_) const {
-                MatrixBase<JacType> jx = jx_.const_cast_derived();
+                MatrixBase<JacType> & jx = jx_.const_cast_derived();
 
                 jx.fill(0);
                 // This type of array-indexing requires Eigen>3.3
                 jx(pOutStateIdx, pInStateControlIdx) = pj;
                 jx(eOutStateIdx, eInStateControlIdx) += ej;
             }
-            
-            
+
+
         //======================================================================
             /// Properties
             Pursuer* p;
@@ -364,6 +386,7 @@ namespace WGL_DG {
     ////////////////////////////////////////////////////////////////////////////
         private:
             /// Methods
+
 
         //======================================================================
             /// Properties

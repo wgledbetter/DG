@@ -75,24 +75,19 @@ namespace WGL_DG {
             inline void constructorFunction(){
                 int pxv = P_XV;
                 int puv = P_UV;
-                int exv = E_XV;
 
                 const Array<int, P_XV, 1> purVar = Array<int, P_XV, 1>::LinSpaced(P_XV, 0, P_XV-1);
                 const Array<int, P_UV, 1> purCon = Array<int, P_UV, 1>::LinSpaced(P_UV, 0, P_UV-1);
-                GameBase::pInStateIdx = purVar;
-                GameBase::pOutStateIdx = purVar;
-                GameBase::pInControlIdx = purCon;
-                GameBase::pInStateControlIdx.template head<P_XV>() = purVar;
-                GameBase::pInStateControlIdx.template tail<P_UV>() = purCon + pxv;
+                GameBase::set_pursuer_state_input(purVar);
+                GameBase::set_pursuer_state_output(purVar);
+                GameBase::set_pursuer_control_input(purCon);
                 pCostateIdx = purVar;
 
                 const Array<int, E_XV, 1> evaVar = Array<int, E_XV, 1>::LinSpaced(E_XV, pxv, P_XV+E_XV-1);
                 const Array<int, E_UV, 1> evaCon = Array<int, E_UV, 1>::LinSpaced(E_UV, puv, P_UV+E_UV-1);
-                GameBase::eInStateIdx = evaVar;
-                GameBase::eOutStateIdx = evaVar;
-                GameBase::eInControlIdx = evaCon;
-                GameBase::eInStateControlIdx.template head<E_XV>() = evaVar;
-                GameBase::eInStateControlIdx.template tail<E_UV>() = evaCon + exv;
+                GameBase::set_evader_state_input(evaVar);
+                GameBase::set_evader_state_output(evaVar);
+                GameBase::set_evader_control_input(evaCon);
                 eCostateIdx = evaVar;
             }
 
@@ -160,12 +155,17 @@ namespace WGL_DG {
             /// Methods
             inline void constructorFunction(){
                 if( (P_XV == XV) && (E_XV == XV) ){
+                    int puv = P_UV;
                     const Array<int, XV, 1> fullVars = Array<int, XV, 1>::LinSpaced(XV, 0, XV-1);
+                    const Array<int, P_UV, 1> purCon = Array<int, P_UV, 1>::LinSpaced(P_UV, 0, P_UV-1);
                     GameBase::set_pursuer_state_input(fullVars);
                     GameBase::set_pursuer_state_input(fullVars);
-                    GameBase::set_evader_state_input(fullVars);
-                    GameBase::set_evader_state_input(fullVars);
+                    GameBase::set_pursuer_control_input(purCon);
                     pCostateIdx = fullVars;
+                    const Array<int, E_UV, 1> evaCon = Array<int, E_UV, 1>::LinSpaced(E_UV, puv, P_UV+E_UV-1);
+                    GameBase::set_evader_state_input(fullVars);
+                    GameBase::set_evader_state_input(fullVars);
+                    GameBase::set_evader_control_input(evaCon);
                     eCostateIdx = fullVars;
                 }else{
                     // BAD

@@ -62,6 +62,7 @@
       </toolsSet>
       <compileType>
         <ccTool>
+          <developmentMode>6</developmentMode>
           <incDir>
             <pElem>../../Install/intel/mkl/include</pElem>
             <pElem>../../Programs/SuiteSparse/SuiteSparse/include</pElem>

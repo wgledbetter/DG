@@ -72,7 +72,6 @@ struct MySpec {
 using MyConcept = rubber_types::TypeErasure<MySpec>;
 
 
-
 template<class Scalar>
 using DgInVec = SeparableDynamicGame<0, PontaniConway3dDynamics, PontaniConway3dDynamics, Decoupled>::InputVec<Scalar>;
 template<class Scalar>
@@ -81,11 +80,9 @@ using DgOutVec = SeparableDynamicGame<0, PontaniConway3dDynamics, PontaniConway3
 
 
 int main() {
-    
+
     bool breakp;
-    
-    
-    
+
     if(1){
         PontaniConway3dDynamics pc3d_1, pc3d_2;
         pc3d_1.set_mass(10);
@@ -94,19 +91,39 @@ int main() {
         pc3d_2.set_mass(20);
         pc3d_2.set_mu(9.81);
         pc3d_2.set_thrust(0.0015);
-        
+
         PontaniConway3dDynamics::InputVec<double> x;
         x = PontaniConway3dDynamics::InputVec<double>::Random();
-        
+
         cout << PontaniConway3dDynamics::UV << endl;
-        
-        cout << SeparableDynamicGame<0, PontaniConway3dDynamics, PontaniConway3dDynamics, Decoupled>::GameBase::P_XV << endl;
-        SeparableDynamicGame<0, PontaniConway3dDynamics, PontaniConway3dDynamics, Decoupled> DG;
-        
+
+        typedef SeparableDynamicGame<0, PontaniConway3dDynamics, PontaniConway3dDynamics, Decoupled> SepGameType;
+        cout << SepGameType::GameBase::P_XV << endl;
+        SepGameType DG;
+
+        DG.set_pursuer(&pc3d_1);
+        DG.set_evader(&pc3d_2);
+
         DgInVec<double> dgIn = DgInVec<double>::Random();
         DgOutVec<double> dgOut;
+
+        DG.compute(dgIn, dgOut);
         
-        DG.compute(dgIn,dgOut);
+        SemiDirect<SepGameType> SD(&DG);
+        
+        SemiDirect<SepGameType>::InputVec<double> sdIn = SemiDirect<SepGameType>::InputVec<double>::Random();
+        SemiDirect<SepGameType>::OutputVec<double> sdOut;
+        
+        // Debug SDGB::adjointtransposegradient
+//        Matrix<double, SepGameType::XV+SepGameType::UV, 1> adjIn = Matrix<double, SepGameType::XV+SepGameType::UV, 1>::Random();
+//        Matrix<double, SepGameType::XV, 1> adjOut;
+//        DG.adjointgradient(dgIn, adjOut, adjIn);
+
+//        Matrix<double, SepGameType::XV, 1> adjTIn = Matrix<double, SepGameType::XV, 1>::Random();
+//        Matrix<double, SepGameType::XV+SepGameType::UV, 1> adjTOut;
+//        DG.adjointtransposegradient(dgIn, adjTOut, adjTIn);
+        
+        SD.compute(sdIn, sdOut);
 
     }
     
@@ -118,13 +135,13 @@ int main() {
         vec.push_back(ms13);
         vec.push_back(ms17);
         vec.push_back(ms25);
-        
+
         int x1 = 12;
         double x2 = 3.14;
         vec[0].theFunction(x1);
         vec[1].theFunction(x2);
         vec[2].theFunction(x2);
-        
+
         std::vector<VectorFunction_EigenRefCall> vf_vec;
         PontaniConway3dDynamics pc3d_1, pc3d_2;
         pc3d_1.set_mass(10);
@@ -133,10 +150,10 @@ int main() {
         pc3d_2.set_mass(20);
         pc3d_2.set_mu(9.81);
         pc3d_2.set_thrust(0.0015);
-        
+
         vf_vec.push_back(pc3d_1);
         vf_vec.push_back(pc3d_2);
-        
+
         PontaniConway3dDynamics::InputVec<double> x;
         x = PontaniConway3dDynamics::InputVec<double>::Random();
         Matrix<double, 8, 1> fx;
@@ -156,26 +173,26 @@ int main() {
         fx(idx) = tempVec;
         cout << "After Calculation fx:" << endl << fx << endl;
     }
-    
+
     if(0){
-        
+
         PontaniConway3dDynamics testPursuer, testEvader;
         SeparableDynamicGame<0, PontaniConway3dDynamics, PontaniConway3dDynamics> DG;
-        
+
         DG.gen_pursuer();
         DG.gen_evader();
-        
+
         DG.pointer_to_evader()->set_mass(12);
-        
+
     }
     
     if(0) {
         const int dim = 2;
-    
+
         FastEdgesTensorFunction<dim> itf;
-    
+
         EikonalSolution< dim, FastEdgesTensorFunction<dim>, Mesh<dim, MeshType::RecTriangular> > eikSol;
-    
+
         for(int i=0; i<dim; i++){
             eikSol.set_bounds(i, -1, 1);
             eikSol.set_nDisc(i, 250);
