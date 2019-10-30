@@ -75,3 +75,5 @@ Thought I fixed the segfault with std::exit, but turns out that quits the whole 
 30 Oct
 It's an issue with SeparableDynamicGameBase:377
 Because jacobian is <XV, XV+UV> and inState is <XV+1+UV>, using xInStateControlIdx won't work
+
+Fixed it. Next up, either write SemiDirect::jacobian() and/or port this work into ASSET/Reverie

@@ -95,10 +95,7 @@ int main() {
         PontaniConway3dDynamics::InputVec<double> x;
         x = PontaniConway3dDynamics::InputVec<double>::Random();
 
-        cout << PontaniConway3dDynamics::UV << endl;
-
         typedef SeparableDynamicGame<0, PontaniConway3dDynamics, PontaniConway3dDynamics, Decoupled> SepGameType;
-        cout << SepGameType::GameBase::P_XV << endl;
         SepGameType DG;
 
         DG.set_pursuer(&pc3d_1);
@@ -111,7 +108,7 @@ int main() {
         
         SemiDirect<SepGameType> SD(&DG);
         
-        SemiDirect<SepGameType>::InputVec<double> sdIn = SemiDirect<SepGameType>::InputVec<double>::Random();
+        SemiDirect<SepGameType>::InputVec<double> sdIn = SemiDirect<SepGameType>::InputVec<double>::Ones();
         SemiDirect<SepGameType>::OutputVec<double> sdOut;
         
         // Debug SDGB::adjointtransposegradient
@@ -126,6 +123,10 @@ int main() {
         SD.compute(sdIn, sdOut);
         cout << sdIn << '\n';
         cout << '\n' << sdOut << '\n';
+        
+        SepGameType::JacMatrix<double> j;
+        DG.jacobian(dgIn, j);
+        cout << '\n' << j << '\n';
 
     }
     
