@@ -22,6 +22,8 @@ namespace WGL_DG {
             using InputVec = Matrix<Scalar, IR, 1>;
             template<class Scalar>
             using OutputVec = Matrix<Scalar, OR, 1>;
+            template<class Scalar>
+            using JacMatrix = Matrix<Scalar, OR, IR>;
 
 
     //==========================================================================

@@ -115,15 +115,17 @@ int main() {
         SemiDirect<SepGameType>::OutputVec<double> sdOut;
         
         // Debug SDGB::adjointtransposegradient
-//        Matrix<double, SepGameType::XV+SepGameType::UV, 1> adjIn = Matrix<double, SepGameType::XV+SepGameType::UV, 1>::Random();
+//        Matrix<double, SepGameType::XV+1+SepGameType::UV, 1> adjIn = Matrix<double, SepGameType::XV+1+SepGameType::UV, 1>::Random();
 //        Matrix<double, SepGameType::XV, 1> adjOut;
 //        DG.adjointgradient(dgIn, adjOut, adjIn);
 
 //        Matrix<double, SepGameType::XV, 1> adjTIn = Matrix<double, SepGameType::XV, 1>::Random();
-//        Matrix<double, SepGameType::XV+SepGameType::UV, 1> adjTOut;
+//        Matrix<double, SepGameType::XV+1+SepGameType::UV, 1> adjTOut;
 //        DG.adjointtransposegradient(dgIn, adjTOut, adjTIn);
         
         SD.compute(sdIn, sdOut);
+        cout << sdIn << '\n';
+        cout << '\n' << sdOut << '\n';
 
     }
     

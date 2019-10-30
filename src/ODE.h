@@ -12,6 +12,14 @@ namespace WGL_DG {
     struct ODE : VectorFunction<Derived, (_XV+1+_UV+_PV), _XV> {
 
         public:
+            /// Properties
+            static const int XV = _XV;
+            static const int UV = _UV;
+            static const int PV = _PV;
+            static const int XtUV = XV + 1 + UV;
+            static const int XtUPV = XV + 1 + UV + PV;
+
+
             /// Typedefs
 
 
@@ -21,14 +29,6 @@ namespace WGL_DG {
 
             }
 
-
-        //======================================================================
-            /// Properties
-            static const int XV = _XV;
-            static const int UV = _UV;
-            static const int PV = _PV;
-            static const int XtUV = XV + 1 + UV;
-            static const int XtUPV = XV + 1 + UV + PV;
 
 
     };

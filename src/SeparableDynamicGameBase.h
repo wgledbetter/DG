@@ -13,34 +13,11 @@ namespace WGL_DG {
     struct SeparableDynamicGameBase : ODE<Derived, _XV, PursuerDynamics::UV + EvaderDynamics::UV, _PV> {
 
         public:
-            /// Typedefs
+
             using Pursuer = PursuerDynamics;
             using Evader = EvaderDynamics;
 
-            template<class Scalar>
-            using PxVector = Matrix<Scalar, Pursuer::XV, 1>;
-            template<class Scalar>
-            using PuVector = Matrix<Scalar, Pursuer::UV, 1>;
-            template<class Scalar>
-            using PxuVector = Matrix<Scalar, Pursuer::XV+Pursuer::UV, 1>;
-            template<class Scalar>
-            using PxtuVector = Matrix<Scalar, Pursuer::XV+1+Pursuer::UV, 1>;
-            template<class Scalar>
-            using PJacMatrix = Matrix<Scalar, Pursuer::XV, Pursuer::XV+Pursuer::UV>;
 
-            template<class Scalar>
-            using ExVector = Matrix<Scalar, Evader::XV, 1>;
-            template<class Scalar>
-            using EuVector = Matrix<Scalar, Evader::UV, 1>;
-            template<class Scalar>
-            using ExuVector = Matrix<Scalar, Evader::XV+Evader::UV, 1>;
-            template<class Scalar>
-            using ExtuVector = Matrix<Scalar, Evader::XV+1+Evader::UV, 1>;
-            template<class Scalar>
-            using EJacMatrix = Matrix<Scalar, Evader::XV, Evader::XV+Evader::UV>;
-
-
-        //======================================================================
             /// Properties
             static const int XV = _XV;
             static const int UV = Pursuer::UV + Evader::UV;
@@ -60,6 +37,31 @@ namespace WGL_DG {
             Array<int, E_XV, 1> eInStateIdx, eOutStateIdx;
             Array<int, E_UV, 1> eInControlIdx;
             Array<int, E_XV+E_UV, 1> eInStateControlIdx;
+
+
+        //======================================================================
+            /// Typedefs
+            template<class Scalar>
+            using PxVector = Matrix<Scalar, P_XV, 1>;
+            template<class Scalar>
+            using PuVector = Matrix<Scalar, P_UV, 1>;
+            template<class Scalar>
+            using PxuVector = Matrix<Scalar, P_XV+P_UV, 1>;
+            template<class Scalar>
+            using PxtuVector = Matrix<Scalar, P_XV+1+P_UV, 1>;
+            template<class Scalar>
+            using PJacMatrix = Matrix<Scalar, P_XV, P_XV+1+P_UV>;
+
+            template<class Scalar>
+            using ExVector = Matrix<Scalar, E_XV, 1>;
+            template<class Scalar>
+            using EuVector = Matrix<Scalar, E_UV, 1>;
+            template<class Scalar>
+            using ExuVector = Matrix<Scalar, E_XV+E_UV, 1>;
+            template<class Scalar>
+            using ExtuVector = Matrix<Scalar, E_XV+1+E_UV, 1>;
+            template<class Scalar>
+            using EJacMatrix = Matrix<Scalar, E_XV, E_XV+1+E_UV>;
 
 
         //======================================================================
@@ -143,13 +145,13 @@ namespace WGL_DG {
 
                 MatrixBase<OutType> & fx = fx_.const_cast_derived();
                 
-                PxtuVector<Scalar> xP;
-                ExtuVector<Scalar> xE;
+                PxtuVector<Scalar> xP = PxtuVector<Scalar>::Zero();
+                ExtuVector<Scalar> xE = ExtuVector<Scalar>::Zero();
 
                 process_input_state(x, xP, xE);
 
-                PxVector<Scalar> fxP;
-                ExVector<Scalar> fxE;
+                PxVector<Scalar> fxP = PxVector<Scalar>::Zero();
+                ExVector<Scalar> fxE = ExVector<Scalar>::Zero();
 
                 p->compute(xP, fxP);
                 e->compute(xE, fxE);
@@ -166,14 +168,15 @@ namespace WGL_DG {
                 using Scalar = typename InType::Scalar;
 
                 MatrixBase<JacType> & jx = jx_.const_cast_derived();
+                jx = Matrix<Scalar, XV, XV+1+UV>::Zero();
 
-                PxtuVector<Scalar> xP;
-                ExtuVector<Scalar> xE;
+                PxtuVector<Scalar> xP = PxtuVector<Scalar>::Zero();
+                ExtuVector<Scalar> xE = ExtuVector<Scalar>::Zero();
 
                 process_input_state(x, xP, xE);
 
-                PJacMatrix<Scalar> jP;
-                EJacMatrix<Scalar> jE;
+                PJacMatrix<Scalar> jP = PJacMatrix<Scalar>::Zero();
+                EJacMatrix<Scalar> jE = EJacMatrix<Scalar>::Zero();
 
                 p->jacobian(xP, jP);
                 e->jacobian(xE, jE);
@@ -190,15 +193,15 @@ namespace WGL_DG {
                 MatrixBase<OutType> fx = fx_.const_cast_derived();
                 MatrixBase<JacType> jx = jx_.const_cast_derived();
 
-                PxtuVector<Scalar> xP;
-                ExtuVector<Scalar> xE;
+                PxtuVector<Scalar> xP = PxtuVector<Scalar>::Zero();
+                ExtuVector<Scalar> xE = ExtuVector<Scalar>::Zero();
 
                 process_input_state(x, xP, xE);
 
-                PxVector<Scalar> fxP;
-                ExVector<Scalar> fxE;
-                PJacMatrix<Scalar> jP;
-                EJacMatrix<Scalar> jE;
+                PxVector<Scalar> fxP = PxVector<Scalar>::Zero();
+                ExVector<Scalar> fxE = ExVector<Scalar>::Zero();
+                PJacMatrix<Scalar> jP = PJacMatrix<Scalar>::Zero();
+                EJacMatrix<Scalar> jE = EJacMatrix<Scalar>::Zero();
 
                 p->compute(xP, fxP);
                 p->jacobian(xP, jP);
@@ -216,13 +219,12 @@ namespace WGL_DG {
 
                 using Scalar = typename AdjGradType::Scalar;
 
-                Matrix<Scalar, XV, XV+UV> jac;
+                Matrix<Scalar, XV, XV+1+UV> jac = Matrix<Scalar, XV, XV+1+UV>::Zero();
                 this->jacobian(x, jac);
 
                 MatrixBase<AdjGradType> & adjgrad = adjgrad_.const_cast_derived();
                 adjgrad = jac*adjvars;
 
-                std::exit(1);
             }
 
         //______________________________________________________________________
@@ -231,13 +233,12 @@ namespace WGL_DG {
 
                 using Scalar = typename AdjGradType::Scalar;
 
-                Matrix<Scalar, XV, XV+UV> jac;
+                Matrix<Scalar, XV, XV+1+UV> jac = Matrix<Scalar, XV, XV+1+UV>::Zero();
                 this->jacobian(x, jac);
 
                 MatrixBase<AdjGradType> & adjgrad = adjgrad_.const_cast_derived();
                 adjgrad = (adjvars.transpose()*jac).transpose();
 
-                std::exit(1);
             }
 
 
@@ -372,8 +373,13 @@ namespace WGL_DG {
 
                 jx.fill(0);
                 // This type of array-indexing requires Eigen>3.3
-                jx(pOutStateIdx, pInStateControlIdx) = pj;
-                jx(eOutStateIdx, eInStateControlIdx) += ej;
+                jx(pOutStateIdx, pInStateIdx) = pj(all, seqN(0, P_XV));
+                jx(pOutStateIdx, XV) = pj(all, P_XV);
+                jx(pOutStateIdx, pInControlIdx+XV+1) = pj(all, lastN(P_UV));
+
+                jx(eOutStateIdx, eInStateIdx) += ej(all, seqN(0, E_XV));
+                jx(eOutStateIdx, XV) += ej(all, E_XV);
+                jx(eOutStateIdx, eInControlIdx+XV+1) += ej(all, lastN(E_UV));
             }
 
 

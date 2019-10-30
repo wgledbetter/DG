@@ -91,9 +91,8 @@ namespace WGL_DG {
 
 
                 // Compute the game's evader's costate dynamics
-                Matrix<IScalar, G_XV+SeparableGame::UV, 1> csOutput = Matrix<IScalar, G_XV+SeparableGame::UV, 1>::Zero();
+                Matrix<IScalar, G_XV+1+SeparableGame::UV, 1> csOutput = Matrix<IScalar, G_XV+1+SeparableGame::UV, 1>::Zero();
                 game->adjointtransposegradient(fullState, csOutput, csInput);
-                std::cout << "ATG Returned..." << '\n';
                 costateDot = csOutput(game->eCostateIdx);
 
 

@@ -117,13 +117,13 @@ namespace WGL_DG {
                 jx(0,2) = v*cg;
                 jx(1,0) = 2*mu*sg/(r*r*r);
                 jx(1,2) = -mu*cg/(r*r);
-                jx(1,6) = -T*sa*cb/m;
-                jx(1,7) = -T*ca*sb/m;
+                jx(1,7) = -T*sa*cb/m;
+                jx(1,8) = -T*ca*sb/m;
                 jx(2,0) = cg*(2*mu-r*v*v)/(r*r*r*v);
                 jx(2,1) = -T*sa*cb/(m*v*v) + mu*cg/(r*r*v*v) + cg/r;
                 jx(2,2) = sg*(mu-r*v*v)/(r*r*v);
-                jx(2,6) = T*ca*cb/(m*v);
-                jx(2,7) = -T*sa*sb/(m*v);
+                jx(2,7) = T*ca*cb/(m*v);
+                jx(2,8) = -T*sa*sb/(m*v);
                 jx(3,0) = -v*cg*cz/(r*r*cp);
                 jx(3,1) = cg*cz/(r*cp);
                 jx(3,2) = -v*sg*cz/(r*cp);
@@ -138,7 +138,7 @@ namespace WGL_DG {
                 jx(5,2) = T*sb*tan(gam)/(m*v*cg) + v*sg*tan(phi)*cz/r;
                 jx(5,4) = -v*cg*cz/(r*cp*cp);
                 jx(5,5) = v*cg*tan(phi)*sz/r;
-                jx(5,7) = T*cb/(m*v*cg);
+                jx(5,8) = T*cb/(m*v*cg);
 
             }
 
@@ -154,7 +154,7 @@ namespace WGL_DG {
 
                 using Scalar = typename InType::Scalar;
 
-                Matrix<Scalar, 6, 8> jac;
+                Matrix<Scalar, 6, 9> jac;
                 jacobian(x,jac);
 
                 MatrixBase<AdjGradType> & adjgrad = adjgrad_.const_cast_derived();

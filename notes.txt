@@ -68,3 +68,10 @@ Need to check dimension or fill the appropriate costate spots in a larger vector
 
 29 Oct
 SegFault SepDynGamBas:237 matmul
+
+Thought I fixed the segfault with std::exit, but turns out that quits the whole program, not just the function...
+
+
+30 Oct
+It's an issue with SeparableDynamicGameBase:377
+Because jacobian is <XV, XV+UV> and inState is <XV+1+UV>, using xInStateControlIdx won't work
